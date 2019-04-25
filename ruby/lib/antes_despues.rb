@@ -41,13 +41,24 @@ class MyClass
     puts "Chau2: " + uno + " " + dos
   end
 
-  def prueboBloque(&block)
+  def pruebo_bloque(&block)
     block.call("funciona OK")
   end
 
-  def testReturn
+  def test_return
     puts 'TestReturn'
     10
+  end
+end
+
+class AnotherClass
+  before_and_after_each_call(proc{ puts "Into another message1" },
+                             proc{ puts "Out of another message1" })
+  before_and_after_each_call(proc{ puts "Into another message2" },
+                             proc{ puts "Out of another message2" })
+
+  def another_method
+    puts "Another message"
   end
 end
 
@@ -55,8 +66,11 @@ obj = MyClass.new
 obj.hola("un parametro")
 obj.chau
 obj.chau2("dos","parametros")
-obj.prueboBloque{ |n| puts "El bloque " + n }
+obj.pruebo_bloque{ |n| puts "El bloque " + n }
 
 obj2 = MyClass.new
-a = obj2.testReturn
+a = obj2.test_return
 puts a
+
+obj3 = AnotherClass.new
+obj3.another_method
