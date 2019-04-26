@@ -8,8 +8,7 @@ class Class
   end
 
   def method_added(original_method_name)
-    unless @already_replacing_method \
-      or Class.instance_methods.include?(original_method_name)
+    unless @already_replacing_method or original_method_name.equal?(:method_added) or original_method_name.equal?(:invariant)
       @already_replacing_method = true
         original_method_object = instance_method(original_method_name)
         bef_procs = @befs.nil? ? [] : @befs
