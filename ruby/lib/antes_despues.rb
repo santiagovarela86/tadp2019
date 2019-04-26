@@ -70,6 +70,19 @@ class NoBefore
   end
 end
 #######################################
+class WithAccessors
+  before_and_after_each_call(proc{ puts "Before with accessors" },
+                             proc{ puts "After with accessors" })
+
+  attr_accessor :atributo1, :atributo2
+
+  def initialize(atr1, atr2)
+    @atributo1 = atr1
+    @atributo2 = atr2
+    puts "Inicializando el objeto"
+  end
+end
+#######################################
 obj = MyClass.new
 obj.hola("un parametro")
 obj.chau
@@ -85,4 +98,8 @@ obj3.another_method
 
 obj4 = NoBefore.new
 obj4.no_before
+
+obj5 = WithAccessors.new(1,2)
+puts obj5.atributo1
+puts obj5.atributo2
 #######################################
