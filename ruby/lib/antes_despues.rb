@@ -1,5 +1,4 @@
 #######################################
-#######################################
 class Class
   def before_and_after_each_call(bef, aft)
     @befs ||= []
@@ -11,16 +10,10 @@ class Class
   def method_added(original_method_name)
     unless @already_replacing_method \
       or Class.instance_methods.include?(original_method_name)
-        #or self.instance_methods.include?(original_method_name) \
-          #or original_method_name.equal?(:method_added) \
-            #or original_method_name.equal?(:invariant) \
-              #or original_method_name.equal?(:initialize)
       @already_replacing_method = true
         original_method_object = instance_method(original_method_name)
         bef_procs = @befs.nil? ? [] : @befs
         aft_procs = @afts.nil? ? [] : @afts
-        #bef_procs = @befs
-        #aft_procs = @afts
         define_method(original_method_name) do |*args, &block|
           bef_procs.each {|x| self.instance_eval(&x)}
           result = original_method_object.bind(self).call(*args, &block)
@@ -29,15 +22,6 @@ class Class
         end
         @already_replacing_method = false
     end
-  end
-end
-#######################################
-class Class
-  def invariant(&block)
-    #self.instance_eval(&block)
-    #unless block.call
-    #  puts "exception"
-    #end
   end
 end
 #######################################
@@ -80,18 +64,11 @@ class AnotherClass
   end
 end
 #######################################
-class TestInvariant
-  attr_accessor :vida, :fuerza
-
-  def initialize(vida=100, fuerza=100)
-    @vida = vida
-    @fuerza = fuerza
+class NoBefore
+  def no_before
+    puts "No before OK."
   end
-
-  invariant { vida >= 0 }
-  #invariant { fuerza > 0 && fuerza < 100 }
 end
-#######################################
 #######################################
 obj = MyClass.new
 obj.hola("un parametro")
@@ -105,6 +82,7 @@ puts a
 
 obj3 = AnotherClass.new
 obj3.another_method
+
+obj4 = NoBefore.new
+obj4.no_before
 #######################################
-#######################################
-obj5 = TestInvariant.new(100,100)
