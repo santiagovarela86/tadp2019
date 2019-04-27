@@ -5,6 +5,7 @@ module MyMixin
 
     observed.instance_variable_set :@beforeProcs, []
     observed.instance_variable_set :@afterProcs, []
+    observed.instance_variable_set :@invariantProcs, []
 
     observed.instance_methods(false).each do |func|
       inject(observed, func)
@@ -23,6 +24,10 @@ module MyMixin
       @beforeProcs << proc1
       @afterProcs << proc2
     end
+
+    def observed.invariant(&invariant_proc)
+      @invariantProcs << invariant_proc
+    end
   end
 
   def self.inject(target, meth)
@@ -31,11 +36,15 @@ module MyMixin
       method_object = instance_method(meth)
       procs_to_call_before = @beforeProcs
       procs_to_call_after = @afterProcs
+      procs_to_call_after_invariants = @invariantProcs
 
       define_method(meth) do |*args, &block|
         procs_to_call_before.each {|x| self.instance_eval(&x)}
         result = method_object.bind(self).call(*args, &block)
         procs_to_call_after.each {|x| self.instance_eval(&x)}
+        if procs_to_call_after_invariants.any? {|x| !self.instance_eval(&x)}
+          raise InvariantError
+        end
         result
       end
 
@@ -43,6 +52,9 @@ module MyMixin
   end
 end
 
+class InvariantError < StandardError
+
+end
 
 module SomeModule
 
@@ -64,8 +76,11 @@ class SomeTestClass
   include AnotherModule
   include SomeModule
 
+  invariant {@gato == 10}
+
   def initialize
     @perro = 10
+    @gato = 1
   end
 
   before_and_after_each_call(
@@ -83,8 +98,14 @@ class SomeTestClass
     puts @perro
     3
   end
+
+  def gilada2
+    @gato = 2
+  end
+
 end
 
+=begin
 
 someInstance = SomeTestClass.new
 someInstance.gilada
@@ -92,3 +113,12 @@ someInstance.gilada
 anotherInstance = SomeTestClass.new
 algo = anotherInstance.gilada
 puts "algo: #{algo}"
+=end
+
+
+someInstance = SomeTestClass.new
+someInstance.gilada
+someInstance.gilada
+someInstance.gilada2
+
+
