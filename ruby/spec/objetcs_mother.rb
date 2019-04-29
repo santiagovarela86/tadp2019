@@ -20,7 +20,7 @@ class SomeTestClass
   include AnotherModule
   include SomeModule
 
-  invariant {@gato == 10}
+  invariant {@gato == 1}
 
   def initialize
     @perro = 10

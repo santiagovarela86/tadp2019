@@ -3,20 +3,20 @@ module MyMixin
   def self.included(observed)
 
 
-    observed.instance_variable_set :@beforeProcs, []
-    observed.instance_variable_set :@afterProcs, []
-    observed.instance_variable_set :@invariantProcs, []
+    observed.instance_variable_set :@before_procs, []
+    observed.instance_variable_set :@after_procs, []
+    observed.instance_variable_set :@invariant_procs, []
 
     def observed.invariant_procs
-      @invariantProcs
+      @invariant_procs
     end
 
     def observed.after_procs
-      @afterProcs
+      @after_procs
     end
 
     def observed.before_procs
-      @beforeProcs
+      @before_procs
     end
 
     observed.instance_methods(false).each do |func|
@@ -33,12 +33,12 @@ module MyMixin
     end
 
     def observed.before_and_after_each_call(proc1, proc2)
-      @beforeProcs << proc1
-      @afterProcs << proc2
+      @before_procs << proc1
+      @after_procs << proc2
     end
 
     def observed.invariant(&invariant_proc)
-      @invariantProcs << invariant_proc
+      @invariant_procs << invariant_proc
     end
   end
 
