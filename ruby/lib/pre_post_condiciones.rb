@@ -9,8 +9,6 @@ module PrePostCondiciones
 
   def self.included(othermod)
 
-    attr_accessor :pre, :post
-
     def othermod.pre(&pre)
       @pre = pre
     end
@@ -52,6 +50,8 @@ module PrePostCondiciones
           othermod.__pre = nil
           othermod.__post = nil
 
+          #aca defino las variables y metodos a obtener
+          #tendria que buscar la forma de luego sacarlos
           original_method_object.parameters.each{|param|
             instance_variable_set("@" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
 
@@ -62,13 +62,20 @@ module PrePostCondiciones
 
           unless @esteLoopeando
             @esteLoopeando = true
-            unless self.instance_eval(&pre)
-              raise PrecondicionException
+            if !pre.equal?(nil)
+              unless self.instance_eval(&pre)
+                raise PrecondicionException
+              end
             end
+
             result = original_method_object.bind(self).call(*args, &block)
-            unless self.instance_eval(&post)
-              raise PostcondicionException
+
+            if !post.equal?(nil)
+              unless self.instance_exec(result, &post)
+                raise PostcondicionException
+              end
             end
+
             @esteLoopeando = false
             result
           else
@@ -106,5 +113,5 @@ objeto1 = Operaciones.new
 #objeto1.dividir(10,0) #tira excepcion
 puts "Despues de dividir por cero"
 puts "Antes de probar el post"
-objeto1.dividir(10,1) #tira excepcion
+#objeto1.dividir(10,1) #tira excepcion si pongo un post falso (ej: post { |result| result * divisor == dividendo + 1}
 puts "Despues de probar el post"
