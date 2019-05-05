@@ -36,7 +36,7 @@ module BeforeAndAfter
       unless @already_replacing_method
         @already_replacing_method = true
         BeforeAndAfter.reemplazar(self, original_method_name)
-        @already_replacing_method = false;
+        @already_replacing_method = false
       end
     end
 
@@ -47,11 +47,11 @@ module BeforeAndAfter
           bef_procs = othermod.__befs
           aft_procs = othermod.__afts
           unless @esteLoopeando
-            @esteLoopeando = true;
+            @esteLoopeando = true
             bef_procs.each {|x| self.instance_eval(&x)}
             result = original_method_object.bind(self).call(*args, &block)
             aft_procs.each {|x| self.instance_eval(&x)}
-            @esteLoopeando = false;
+            @esteLoopeando = false
             result
           else
             result = original_method_object.bind(self).call(*args, &block)

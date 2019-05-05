@@ -15,7 +15,7 @@ module Invariant
         end
       }
 
-      __after(@new_block);
+      __after(@new_block)
     end
   end
 end
