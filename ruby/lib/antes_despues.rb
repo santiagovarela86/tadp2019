@@ -1,30 +1,71 @@
 #######################################
-class Class
-  def before_and_after_each_call(bef, aft)
-    @befs ||= []
-    @afts ||= []
-    @befs << bef
-    @afts << aft
-  end
+module BeforeAndAfter
 
-  def method_added(original_method_name)
-    unless @already_replacing_method or original_method_name.equal?(:method_added) or original_method_name.equal?(:invariant)
-      @already_replacing_method = true
+  def self.included(othermod)
+    othermod.instance_variable_set :@befs, []
+    othermod.instance_variable_set :@afts, []
+
+    def othermod.before_and_after_each_call(bef, aft)
+      __before(bef)
+      __after(aft)
+    end
+
+    def othermod.__before(bef)
+      @befs ||= []
+      @befs << bef
+    end
+
+    def othermod.__after(aft)
+      @afts ||= []
+      @afts << aft
+    end
+
+    def othermod.__befs
+      @befs.nil? ? [] : @befs
+    end
+
+    def othermod.__afts
+      @afts.nil? ? [] : @afts
+    end
+
+    othermod.instance_methods(false).each do |instance_method|
+      reemplazar(othermod, instance_method)
+    end
+
+    def othermod.method_added(original_method_name)
+      unless @already_replacing_method
+        @already_replacing_method = true
+        BeforeAndAfter.reemplazar(self, original_method_name)
+        @already_replacing_method = false;
+      end
+    end
+
+    def self.reemplazar(othermod, original_method_name)
+      othermod.instance_eval do
         original_method_object = instance_method(original_method_name)
-        bef_procs = @befs.nil? ? [] : @befs
-        aft_procs = @afts.nil? ? [] : @afts
         define_method(original_method_name) do |*args, &block|
-          bef_procs.each {|x| self.instance_eval(&x)}
-          result = original_method_object.bind(self).call(*args, &block)
-          aft_procs.each {|x| self.instance_eval(&x)}
-          result
+          bef_procs = othermod.__befs
+          aft_procs = othermod.__afts
+          unless @esteLoopeando
+            @esteLoopeando = true;
+            bef_procs.each {|x| self.instance_eval(&x)}
+            result = original_method_object.bind(self).call(*args, &block)
+            aft_procs.each {|x| self.instance_eval(&x)}
+            @esteLoopeando = false;
+            result
+          else
+            result = original_method_object.bind(self).call(*args, &block)
+            result
+          end
         end
-        @already_replacing_method = false
+      end
     end
   end
 end
 #######################################
 class MyClass
+  include BeforeAndAfter
+
   before_and_after_each_call(proc{ puts "Entré a un mensaje1" },
                              proc{ puts "Salí de un mensaje1" })
   before_and_after_each_call(proc{ puts "Entré a un mensaje2" },
@@ -53,6 +94,8 @@ class MyClass
 end
 #######################################
 class AnotherClass
+  include BeforeAndAfter
+
   before_and_after_each_call(proc{ puts "Into another message1" },
                              proc{ puts "Out of another message1" })
   before_and_after_each_call(proc{ puts "Into another message2" },
@@ -70,6 +113,8 @@ class NoBefore
 end
 #######################################
 class WithAccessors
+  include BeforeAndAfter
+
   before_and_after_each_call(proc{ puts "Before with accessors" },
                              proc{ puts "After with accessors" })
 
@@ -101,4 +146,6 @@ obj4.no_before
 obj5 = WithAccessors.new(1,2)
 puts obj5.atributo1
 puts obj5.atributo2
+obj5.atributo1 = 500
+obj5.atributo2 = 1000
 #######################################
