@@ -95,12 +95,16 @@ module Framework
           #aca defino las variables y metodos a obtener
           #tendria que buscar la forma de luego sacarlos
           #para no ensuciar la interfaz de la clase que implemente esto
-          original_method_object.parameters.each{|param|
-            instance_variable_set("@" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
-            othermod.define_method(param[1].to_s) do
-              instance_variable_get("@" + param[1].to_s)
-            end
-          }
+          #esto huele horrible
+
+          unless original_method_object.parameters[0].equal?(nil)
+            original_method_object.parameters[0].drop(1).each{|param|
+              instance_variable_set("@" + param.to_s, args[original_method_object.parameters[0].find_index(param)-1])
+              othermod.define_method(param[1].to_s) do
+                instance_variable_get("@" + param.to_s)
+              end
+            }
+          end
 
           unless @esteLoopeando
             @esteLoopeando = true
@@ -254,7 +258,7 @@ puts "Despues del segundo ataque"
 #guerrero4 = Guerrero.new(1,0) #tira excepcion
 #######################################
 class Operaciones
-  include PrePostCondiciones
+  include Framework
 
   #precondición de dividir
   pre { divisor != 0 }
