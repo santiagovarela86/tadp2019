@@ -12,28 +12,13 @@ module Framework
   def self.included(othermod)
     othermod.instance_variable_set :@befs, []
     othermod.instance_variable_set :@afts, []
+    othermod.instance_variable_set :@pres, {}
+    othermod.instance_variable_set :@posts, {}
 
+    #interfaces a usar por clases que incluyen el modulo
     def othermod.before_and_after_each_call(bef, aft)
       __before(bef)
       __after(aft)
-    end
-
-    def othermod.__before(bef)
-      @befs ||= []
-      @befs << bef
-    end
-
-    def othermod.__after(aft)
-      @afts ||= []
-      @afts << aft
-    end
-
-    def othermod.__befs
-      @befs.nil? ? [] : @befs
-    end
-
-    def othermod.__afts
-      @afts.nil? ? [] : @afts
     end
 
     def othermod.invariant(&block)
@@ -53,12 +38,15 @@ module Framework
       @post = post
     end
 
-    def othermod.__pre
-      @pre
+    #setters
+    def othermod.__before(bef)
+      @befs ||= []
+      @befs << bef
     end
 
-    def othermod.__post
-      @post
+    def othermod.__after(aft)
+      @afts ||= []
+      @afts << aft
     end
 
     def othermod.__pre=(pre)
@@ -69,6 +57,32 @@ module Framework
       @post = post
     end
 
+    #getters
+    def othermod.__befs
+      @befs.nil? ? [] : @befs
+    end
+
+    def othermod.__afts
+      @afts.nil? ? [] : @afts
+    end
+
+    def othermod.__pres
+      @pres
+    end
+
+    def othermod.__posts
+      @posts
+    end
+
+    def othermod.__pre
+      @pre
+    end
+
+    def othermod.__post
+      @post
+    end
+
+    #reemplazo metodos
     othermod.instance_methods(false).each do |instance_method|
       reemplazar(othermod, instance_method)
     end
@@ -84,13 +98,16 @@ module Framework
     def self.reemplazar(othermod, original_method_name)
       othermod.instance_eval do
         original_method_object = instance_method(original_method_name)
+
+        othermod.__pres[original_method_name] = othermod.__pre unless othermod.__pre.equal?(nil)
+        othermod.__posts[original_method_name] = othermod.__post unless othermod.__post.equal?(nil)
+
+        othermod.__pre = nil
+        othermod.__post = nil
+
         define_method(original_method_name) do |*args, &block|
           bef_procs = othermod.__befs
           aft_procs = othermod.__afts
-          pre = othermod.__pre
-          post = othermod.__post
-          #othermod.__pre = nil
-          #othermod.__post = nil
 
           #aca defino las variables y metodos a obtener
           #tendria que buscar la forma de luego sacarlos
@@ -124,20 +141,25 @@ module Framework
           unless @esteLoopeando
             @esteLoopeando = true
 
-            if !pre.equal?(nil)
-              unless self.instance_eval(&pre)
-                raise PrecondicionException
+            unless othermod.__pres.empty?
+              unless othermod.__pres[original_method_name].equal?(nil)
+                unless self.instance_eval(&othermod.__pres[original_method_name])
+                  raise PrecondicionException
+                end
               end
             end
 
             bef_procs.each {|x| self.instance_eval(&x)}
             result = original_method_object.bind(self).call(*args, &block)
 
-            if !post.equal?(nil)
-              unless self.instance_exec(result, &post)
-                raise PostcondicionException
+            unless othermod.__pres.empty?
+              unless othermod.__posts[original_method_name].equal?(nil)
+                unless self.instance_exec(result, &othermod.__posts[original_method_name])
+                  raise PostcondicionException
+                end
               end
             end
+
 
             aft_procs.each {|x| self.instance_eval(&x)}
             @esteLoopeando = false
