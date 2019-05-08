@@ -5,20 +5,20 @@ class Pila
 
   include Framework
 
-  #attr_accessor :current_node, :capacity
+  attr_accessor :current_node, :capacity
 
   invariant { capacity >= 0 }
 
   post { empty? }
   def initialize(capacity)
-    @capacity = capacity
-    @current_node = nil
+    capacity = capacity
+    current_node = nil
   end
 
   pre { !full? }
   post { height > 0 }
   def push(element)
-    @current_node = Node.new(element, @current_node)
+    @current_node = Node.new(element, current_node) #Si aca saco el arroba de current_node a la izquierda, me fallan dos tests (Framework should fail pushing into a full stack y Framework should fail poping from an empty stack)
   end
 
   pre { !empty? }
@@ -30,19 +30,19 @@ class Pila
 
   pre { !empty? }
   def top
-    @current_node.element
+    current_node.element
   end
 
   def height
-    empty? ? 0 : @current_node.size
+    empty? ? 0 : current_node.size
   end
 
   def empty?
-    @current_node.nil?
+    current_node.nil?
   end
 
   def full?
-    height == @capacity
+    height == capacity
   end
 
   Node = Struct.new(:element, :next_node) do
