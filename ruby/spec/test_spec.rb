@@ -1,9 +1,9 @@
-describe Prueba do
-  let(:prueba) { Prueba.new }
+describe Framework do
 
-  describe '#materia' do
-    it 'debería pasar este test' do
-      expect(prueba.materia).to be :tadp
-    end
+  it "should fail when creating with minus 1 capacity" do
+    expect{
+      pila = Pila.new(-1)
+    }.to raise_error(InvariantException)
   end
+
 end

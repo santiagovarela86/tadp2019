@@ -89,19 +89,34 @@ module Framework
           aft_procs = othermod.__afts
           pre = othermod.__pre
           post = othermod.__post
-          othermod.__pre = nil
-          othermod.__post = nil
+          #othermod.__pre = nil
+          #othermod.__post = nil
 
           #aca defino las variables y metodos a obtener
           #tendria que buscar la forma de luego sacarlos
           #para no ensuciar la interfaz de la clase que implemente esto
           #esto huele horrible
 
-          unless original_method_object.parameters[0].equal?(nil)
-            original_method_object.parameters[0].drop(1).each{|param|
-              instance_variable_set("@" + param.to_s, args[original_method_object.parameters[0].find_index(param)-1])
-              othermod.define_method(param[1].to_s) do
-                instance_variable_get("@" + param.to_s)
+          unless original_method_object.parameters.equal?(nil)
+            original_method_object.parameters.each{|param|
+
+              unless param[0].is_a?(Array)
+
+                if param.length > 1
+                  instance_variable_set("@" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
+
+                  othermod.define_method(param[1].to_s) do
+                    instance_variable_get("@" + param[1].to_s)
+                  end
+                end
+              else
+
+                instance_variable_set("@" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
+
+                othermod.define_method(param[1].to_s) do
+                  instance_variable_get("@" + param[1].to_s)
+                end
+
               end
             }
           end
@@ -137,6 +152,7 @@ module Framework
   end
 end
 #######################################
+=begin
 class MyClass
   include Framework
 
@@ -274,13 +290,13 @@ class Operaciones
     minuendo - sustraendo
   end
 
-end
 #######################################
 puts "Antes de dividir por cero"
 objeto1 = Operaciones.new
 #objeto1.dividir(10,0) #tira excepcion
 puts "Despues de dividir por cero"
 puts "Antes de probar el post"
-#objeto1.dividir(10,1) #tira excepcion si pongo un post falso (ej: post { |result| result * divisor == dividendo + 1}
+objeto1.dividir(10,1) #tira excepcion si pongo un post falso (ej: post { |result| result * divisor == dividendo + 1}
 puts "Despues de probar el post"
+=end
 #######################################
