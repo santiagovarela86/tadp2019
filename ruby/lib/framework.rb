@@ -117,24 +117,13 @@ module Framework
           unless original_method_object.parameters.equal?(nil)
             original_method_object.parameters.each{|param|
 
-              unless param[0].is_a?(Array)
-
                 if param.length > 1
-                  instance_variable_set("@" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
+                  instance_variable_set("@" + "__framework__" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
 
                   othermod.define_method(param[1].to_s) do
-                    instance_variable_get("@" + param[1].to_s)
+                    instance_variable_get("@" + "__framework__" + param[1].to_s)
                   end
                 end
-              else
-
-                instance_variable_set("@" + param[1].to_s, args[original_method_object.parameters.find_index(param)])
-
-                othermod.define_method(param[1].to_s) do
-                  instance_variable_get("@" + param[1].to_s)
-                end
-
-              end
             }
           end
 
@@ -152,7 +141,7 @@ module Framework
             bef_procs.each {|x| self.instance_eval(&x)}
             result = original_method_object.bind(self).call(*args, &block)
 
-            unless othermod.__pres.empty?
+            unless othermod.__posts.empty?
               unless othermod.__posts[original_method_name].equal?(nil)
                 unless self.instance_exec(result, &othermod.__posts[original_method_name])
                   raise PostcondicionException

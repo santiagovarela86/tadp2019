@@ -1,3 +1,6 @@
+#######################################
+require_relative 'framework.rb'
+#######################################
 class ClaseParaTest
 
   include Framework
