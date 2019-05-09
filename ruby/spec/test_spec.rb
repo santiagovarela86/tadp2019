@@ -49,7 +49,7 @@ describe Framework do
     }.to raise_error(PrecondicionException)
   end
 
-  it "should fail poping from an empty stack" do
+  it "should fail popping from an empty stack" do
     expect{
       objetoTest = Pila.new(2)
       objetoTest.push(1)

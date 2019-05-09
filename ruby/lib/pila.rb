@@ -11,14 +11,14 @@ class Pila
 
   post { empty? }
   def initialize(capacity)
-    capacity = capacity
-    current_node = nil
+    @capacity = capacity
+    @current_node = nil
   end
 
   pre { !full? }
   post { height > 0 }
   def push(element)
-    @current_node = Node.new(element, current_node) #Si aca saco el arroba de current_node a la izquierda, me fallan dos tests (Framework should fail pushing into a full stack y Framework should fail poping from an empty stack)
+    @current_node = Node.new(element, current_node)
   end
 
   pre { !empty? }
