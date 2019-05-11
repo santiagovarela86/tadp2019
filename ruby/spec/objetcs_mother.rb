@@ -75,3 +75,102 @@ class Operaciones
 
 
 end
+
+#######################################
+class Pila
+
+  include MyMixin
+
+  attr_accessor :current_node, :capacity
+
+  invariant { capacity >= 0 }
+
+  post { empty? }
+  def initialize(capacity)
+    @capacity = capacity
+    @current_node = nil
+  end
+
+  pre { !full? }
+  post { height > 0 }
+  def push(element)
+    @current_node = Node.new(element, current_node)
+  end
+
+  pre { !empty? }
+  def pop
+    element = top
+    @current_node = @current_node.next_node
+    element
+  end
+
+  pre { !empty? }
+  def top
+    current_node.element
+  end
+
+  def height
+    empty? ? 0 : current_node.size
+  end
+
+  def empty?
+    current_node.nil?
+  end
+
+  def full?
+    height == capacity
+  end
+
+  Node = Struct.new(:element, :next_node) do
+    def size
+      next_node.nil? ? 1 : 1 + next_node.size
+    end
+  end
+end
+#######################################
+class ClaseParaTest
+
+  include MyMixin
+
+  attr_accessor :atributo1, :atributo2, :atributo3, :atributo4
+
+  invariant { atributo1 > 0 }
+  invariant { atributo3 < 0 }
+
+  def initialize(atributo1, atributo2, atributo3, atributo4)
+    @atributo1 = atributo1
+    @atributo2 = atributo2
+    @atributo3 = atributo3
+    @atributo4 = atributo4
+  end
+
+  pre { 1.equal?(2) }
+  def metodo1
+    @atributo1
+  end
+
+  post { 1.equal?(2) }
+  def metodo2
+    @atributo2
+  end
+
+  pre { 1.equal?(2) }
+  post { 1.equal?(1) }
+  def metodo3
+    @atributo1
+  end
+
+  pre { 1.equal?(1) }
+  post { 1.equal?(2) }
+  def metodo4
+    @atributo2
+  end
+
+  post { |result| result * divisor == dividendo + 1}
+  def prueboResultEnPostCondicion(dividendo, divisor)
+    dividendo / divisor
+  end
+
+end
+#######################################
+#

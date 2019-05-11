@@ -145,7 +145,7 @@ module GeneralExclusions
 
   def method_exclusions(observed)
 
-    observed.instance_variable_set :@exclusions, ['initialize']
+    observed.instance_variable_set :@exclusions, []#, ['initialize']
 
     def observed.exclude(method_name)
       @exclusions << method_name
