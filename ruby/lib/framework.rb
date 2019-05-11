@@ -112,6 +112,18 @@ module PreAndPost
       post_tu_return
     end
 
+    def observed.execute_pre(instance, actual_pre, method_object, *args)
+      unless actual_pre.nil?
+        context = PreAndPosContext.new(instance)
+        parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
+        parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+        pre_ok = context.instance_exec &actual_pre
+        unless pre_ok
+          raise PreError
+        end
+      end
+    end
+
     def observed.execute_post(instance, actual_post, method_object, *args, result)
       unless actual_post.nil?
         context = PreAndPosContext.new(instance)
@@ -124,17 +136,7 @@ module PreAndPost
       end
     end
 
-    def observed.execute_pre(instance, actual_pre, method_object, *args)
-      unless actual_pre.nil?
-        context = PreAndPosContext.new(instance)
-        parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
-        parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
-        pre_ok = context.instance_exec &actual_pre
-        unless pre_ok
-          raise PreError
-        end
-      end
-    end
+
 
   end
 end
@@ -195,7 +197,6 @@ module MyMixin
       actual_post = get_post
 
       define_method(meth) do |*args, &block|
-
 
         my_class = self.class
 
