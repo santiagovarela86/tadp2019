@@ -14,21 +14,37 @@ class PreAndPosContext
   end
 end
 
-module BeforeAndAfter
-
-  def before_and_after(observed)
-
-
+module Before
+  def before(observed)
     observed.instance_variable_set :@before_procs, []
+
+    def observed.before_procs
+      @before_procs
+    end
+  end
+
+end
+
+module After
+
+  def after(observed)
     observed.instance_variable_set :@after_procs, []
 
     def observed.after_procs
       @after_procs
     end
+  end
 
-    def observed.before_procs
-      @before_procs
-    end
+end
+
+module BeforeAndAfter
+  include Before
+  include After
+
+  def before_and_after(observed)
+
+    before(observed)
+    after(observed)
 
     def observed.before_and_after_each_call(proc1, proc2)
       @before_procs << proc1
