@@ -163,7 +163,6 @@ module MyMixin
           parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
           parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
           pre_ok = context.instance_exec &actual_pre
-
           unless pre_ok
             raise PreError
           end
@@ -177,12 +176,10 @@ module MyMixin
           parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
           parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
           post_ok = context.instance_exec(result, &actual_post)
-
           unless post_ok
             raise PostError
           end
         end
-
 
         if !should_not_execute && procs_to_call_after_invariants.any? {|x| !self.instance_exec &x}
           raise InvariantError
