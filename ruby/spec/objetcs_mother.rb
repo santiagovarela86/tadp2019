@@ -20,11 +20,14 @@ class SomeTestClass
   include AnotherModule
   include SomeModule
 
-  invariant {@gato == 1}
+  attr_accessor :vida, :fuerza
 
-  def initialize
-    @perro = 10
-    @gato = 1
+  invariant {vida == 1}
+  invariant {fuerza > 10}
+
+  def initialize(vida, fuerza)
+    self.vida = vida
+    self.fuerza = fuerza
   end
 
   before_and_after_each_call(
@@ -34,7 +37,7 @@ class SomeTestClass
 
   before_and_after_each_call(
       proc {puts "Entré a un mensaje2"},
-      proc {@perro += 1}
+      proc {self.fuerza = 12} #Not working if use only fuerza without self
   )
 
   def test_method
@@ -42,7 +45,13 @@ class SomeTestClass
   end
 
   def test_method_2
-    @gato = 2
+    @vida = 2
+  end
+
+  pre {vida > 0 && amount > 5}
+
+  def add_vida(amount)
+    @vida = @vida + amount
   end
 
 end
