@@ -79,7 +79,7 @@ describe Framework do
     }.to raise_error(PrecondicionException)
   end
 
-  it "should fail if the postcondition if false when passing the result of the method as an argument to the postcondition" do
+  it "should fail if the postcondition is false when passing the result of the method as an argument to the postcondition" do
     expect{
       objetoTest = ClaseParaTest.new(1,1,-1,1)
       result = objetoTest.prueboResultEnPostCondicion(10, 1)
