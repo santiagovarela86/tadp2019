@@ -45,7 +45,6 @@ module PreAndPost
     observed.instance_variable_set :@pre_proc, nil
     observed.instance_variable_set :@post_roc, nil
 
-
     def observed.pre(&preCondition)
       @pre_proc = preCondition
     end
@@ -80,7 +79,7 @@ module Exclusions
     end
 
     def observed.is_excluded?(method_name)
-      @exclusions.include?method_name
+      @exclusions.include?method_name.to_s
     end
 
   end
@@ -101,7 +100,7 @@ module MyMixin
     pre_and_post(observed)
     method_exclusions(observed)
 
-    observed.instance_methods(false).select{|method_name| !is_excluded?(method_name) }.each do |func|
+    observed.instance_methods(false).select{ |method_name| !is_excluded?(method_name) }.each do |func|
       inject(observed, func)
     end
 
@@ -121,9 +120,10 @@ module MyMixin
       method_object = instance_method(meth)
 
       define_method(meth) do |*args, &block|
-        procs_to_call_before = self.class.before_procs
-        procs_to_call_after = self.class.after_procs
-        procs_to_call_after_invariants = self.class.invariant_procs
+        my_class = self.class
+        procs_to_call_before = my_class.before_procs
+        procs_to_call_after = my_class.after_procs
+        procs_to_call_after_invariants = my_class.invariant_procs
         procs_to_call_before.each {|x| self.instance_eval(&x)}
         result = method_object.bind(self).call(*args, &block)
         procs_to_call_after.each {|x| self.instance_eval(&x)}
