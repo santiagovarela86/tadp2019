@@ -39,4 +39,9 @@ class ClaseParaTest
     @atributo2
   end
 
+  post { |result| result * divisor == dividendo + 1}
+  def prueboResultEnPostCondicion(dividendo, divisor)
+      dividendo / divisor
+  end
+
 end

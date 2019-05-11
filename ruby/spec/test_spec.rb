@@ -64,4 +64,25 @@ describe Framework do
       objetoTest.top
     }.to raise_error(PrecondicionException)
   end
+
+  it "should fail dividing by zero" do
+    expect{
+      objetoTest = Operaciones.new()
+      result = objetoTest.dividir(10, 0)
+    }.to raise_error(PrecondicionException)
+  end
+
+  it "should fail dividing by zero" do
+    expect{
+      objetoTest = Operaciones.new()
+      result = objetoTest.dividir(10, 0)
+    }.to raise_error(PrecondicionException)
+  end
+
+  it "should fail if the postcondition if false when passing the result of the method as an argument to the postcondition" do
+    expect{
+      objetoTest = ClaseParaTest.new(1,1,-1,1)
+      result = objetoTest.prueboResultEnPostCondicion(10, 1)
+    }.to raise_error(PostcondicionException)
+  end
 end
