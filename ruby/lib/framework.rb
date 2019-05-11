@@ -1,11 +1,9 @@
-module MyMixin
+module BeforeAndAfter
 
-  def self.included(observed)
-
+  def beforeAndAfter(observed)
 
     observed.instance_variable_set :@before_procs, []
     observed.instance_variable_set :@after_procs, []
-    observed.instance_variable_set :@invariant_procs, []
 
     def observed.invariant_procs
       @invariant_procs
@@ -19,6 +17,38 @@ module MyMixin
       @before_procs
     end
 
+    def observed.before_and_after_each_call(proc1, proc2)
+      @before_procs << proc1
+      @after_procs << proc2
+    end
+
+  end
+
+end
+
+module InvariantProcs
+
+  def invariantProcs(observed)
+    observed.instance_variable_set :@invariant_procs, []
+
+    def observed.invariant(&invariant_proc)
+      @invariant_procs << invariant_proc
+    end
+
+  end
+
+end
+
+
+module MyMixin
+  extend BeforeAndAfter
+  extend InvariantProcs
+
+  def self.included(observed)
+
+    beforeAndAfter(observed)
+    invariantProcs(observed)
+
     observed.instance_methods(false).each do |func|
       inject(observed, func)
     end
@@ -30,15 +60,6 @@ module MyMixin
         MyMixin.inject(self, meth) #This will call method_added itself, the condition prevents infinite recursion.
         @called_internal = false
       end
-    end
-
-    def observed.before_and_after_each_call(proc1, proc2)
-      @before_procs << proc1
-      @after_procs << proc2
-    end
-
-    def observed.invariant(&invariant_proc)
-      @invariant_procs << invariant_proc
     end
   end
 
