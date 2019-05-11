@@ -76,6 +76,12 @@ module InvariantProcs
       @invariant_procs
     end
 
+    def observed.execute_invariants(instance, should_not_execute)
+      if !should_not_execute && @invariant_procs.any? {|x| !instance.instance_exec &x}
+        raise InvariantError
+      end
+    end
+
   end
 
 end
@@ -192,8 +198,6 @@ module MyMixin
 
 
         my_class = self.class
-        procs_to_call_after = my_class.after_procs
-        procs_to_call_after_invariants = my_class.invariant_procs
 
         if @evaluating.nil?
           @evaluating = false
@@ -210,10 +214,7 @@ module MyMixin
 
         my_class.execute_after(self, should_not_execute)
         my_class.execute_post(self, actual_post, method_object, *args, result)
-
-        if !should_not_execute && procs_to_call_after_invariants.any? {|x| !self.instance_exec &x}
-          raise InvariantError
-        end
+        my_class.execute_invariants(self, should_not_execute)
 
         if first_evaluation
           @evaluating = false
