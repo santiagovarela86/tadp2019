@@ -37,7 +37,7 @@ class SomeTestClass
 
   before_and_after_each_call(
       proc {puts "Entré a un mensaje2"},
-      proc {self.fuerza = 12} #Not working if use only fuerza without self
+      proc {self.fuerza = 12} #Doesnt worki if use only fuerza because creates local variable
   )
 
   def test_method
