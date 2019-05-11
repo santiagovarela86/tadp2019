@@ -51,6 +51,14 @@ module BeforeAndAfter
       @after_procs << proc2
     end
 
+    def observed.execute_before(instance, should_not_execute)
+      @before_procs.each {|x| instance.instance_exec &x} unless should_not_execute
+    end
+
+    def observed.execute_after(instance, should_not_execute)
+      @after_procs.each {|x| instance.instance_exec &x} unless should_not_execute
+    end
+
   end
 
 end
@@ -96,6 +104,30 @@ module PreAndPost
       post_tu_return = @post_proc
       @post_proc = nil
       post_tu_return
+    end
+
+    def observed.execute_post(instance, actual_post, method_object, *args, result)
+      unless actual_post.nil?
+        context = PreAndPosContext.new(instance)
+        parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
+        parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+        post_ok = context.instance_exec(result, &actual_post)
+        unless post_ok
+          raise PostError
+        end
+      end
+    end
+
+    def observed.execute_pre(instance, actual_pre, method_object, *args)
+      unless actual_pre.nil?
+        context = PreAndPosContext.new(instance)
+        parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
+        parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+        pre_ok = context.instance_exec &actual_pre
+        unless pre_ok
+          raise PreError
+        end
+      end
     end
 
   end
@@ -160,7 +192,6 @@ module MyMixin
 
 
         my_class = self.class
-        procs_to_call_before = my_class.before_procs
         procs_to_call_after = my_class.after_procs
         procs_to_call_after_invariants = my_class.invariant_procs
 
@@ -172,30 +203,13 @@ module MyMixin
         should_not_execute = my_class.is_excluded?(meth) || @evaluating
         @evaluating = true
 
-        procs_to_call_before.each {|x| self.instance_exec &x} unless should_not_execute
-
-        unless actual_pre.nil?
-          context = PreAndPosContext.new(self)
-          parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
-          parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
-          pre_ok = context.instance_exec &actual_pre
-          unless pre_ok
-            raise PreError
-          end
-        end
+        my_class.execute_before(self, should_not_execute)
+        my_class.execute_pre(self, actual_pre, method_object, *args)
 
         result = method_object.bind(self).call(*args, &block)
-        procs_to_call_after.each {|x| self.instance_exec &x} unless should_not_execute
 
-        unless actual_post.nil?
-          context = PreAndPosContext.new(self)
-          parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
-          parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
-          post_ok = context.instance_exec(result, &actual_post)
-          unless post_ok
-            raise PostError
-          end
-        end
+        my_class.execute_after(self, should_not_execute)
+        my_class.execute_post(self, actual_post, method_object, *args, result)
 
         if !should_not_execute && procs_to_call_after_invariants.any? {|x| !self.instance_exec &x}
           raise InvariantError
