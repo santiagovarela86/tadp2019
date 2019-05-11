@@ -66,4 +66,12 @@ class Operaciones
   def dividir(dividendo, divisor)
     dividendo / divisor
   end
+
+  post {|result| result == num1 + num2}
+
+  def suma(num1, num2)
+    num1 - num2
+  end
+
+
 end

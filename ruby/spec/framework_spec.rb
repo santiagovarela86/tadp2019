@@ -27,4 +27,10 @@ describe MyMixin, '#invariants  ' do
     expect(division.dividir(10, 1)).to eq 10
   end
 
+  it 'post' do
+    suma = Operaciones.new
+    expect {suma.suma(10, 2)}.to raise_error PostError
+
+  end
+
 end

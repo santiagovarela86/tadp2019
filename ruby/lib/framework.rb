@@ -138,6 +138,7 @@ module MyMixin
 
       method_object = instance_method(meth)
       actual_pre = get_pre
+      actual_post = get_post
 
       define_method(meth) do |*args, &block|
 
@@ -163,13 +164,25 @@ module MyMixin
           parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
           pre_ok = context.instance_exec &actual_pre
 
-          if !pre_ok
+          unless pre_ok
             raise PreError
           end
         end
 
         result = method_object.bind(self).call(*args, &block)
         procs_to_call_after.each {|x| self.instance_exec &x} unless should_not_execute
+
+        unless actual_post.nil?
+          context = PreAndPosContext.new(self)
+          parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
+          parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+          post_ok = context.instance_exec(result, &actual_post)
+
+          unless post_ok
+            raise PostError
+          end
+        end
+
 
         if !should_not_execute && procs_to_call_after_invariants.any? {|x| !self.instance_exec &x}
           raise InvariantError
