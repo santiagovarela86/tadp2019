@@ -50,8 +50,8 @@ module InvariantProcs
       @invariant_procs
     end
 
-    def observed.execute_invariants(instance, should_not_execute)
-      if !should_not_execute && @invariant_procs.any? {|x| !instance.instance_exec &x}
+    def observed.execute_invariants(instance)
+      if @invariant_procs.any? {|x| !instance.instance_exec &x}
         raise InvariantError
       end
     end
@@ -111,7 +111,6 @@ module PreAndPost
     end
 
 
-
   end
 end
 
@@ -119,7 +118,7 @@ module GeneralExclusions
 
   def method_exclusions(observed)
 
-    observed.instance_variable_set :@exclusions, []#, ['initialize']
+    observed.instance_variable_set :@exclusions, [] #, ['initialize']
 
     def observed.exclude(method_name)
       @exclusions << method_name
@@ -185,7 +184,7 @@ module MyMixin
         result = method_object.bind(self).call(*args, &block)
 
         my_class.execute_post(self, actual_post, method_object, *args, result)
-        my_class.execute_invariants(self, should_not_execute)
+        my_class.execute_invariants(self) unless should_not_execute
 
         if first_evaluation
           @evaluating = false
