@@ -37,32 +37,6 @@ module After
 
 end
 
-module BeforeAndAfter
-  include Before
-  include After
-
-  def before_and_after(observed)
-
-    before(observed)
-    after(observed)
-
-    def observed.before_and_after_each_call(proc1, proc2)
-      @before_procs << proc1
-      @after_procs << proc2
-    end
-
-    def observed.execute_before(instance, should_not_execute)
-      @before_procs.each {|x| instance.instance_exec &x} unless should_not_execute
-    end
-
-    def observed.execute_after(instance, should_not_execute)
-      @after_procs.each {|x| instance.instance_exec &x} unless should_not_execute
-    end
-
-  end
-
-end
-
 module InvariantProcs
 
   def invariant_procs(observed)
@@ -161,14 +135,12 @@ end
 
 
 module MyMixin
-  extend BeforeAndAfter
   extend InvariantProcs
   extend PreAndPost
   extend GeneralExclusions
 
   def self.included(observed)
 
-    before_and_after(observed)
     invariant_procs(observed)
     pre_and_post(observed)
     method_exclusions(observed)
@@ -208,12 +180,10 @@ module MyMixin
         should_not_execute = my_class.is_excluded?(meth) || @evaluating
         @evaluating = true
 
-        my_class.execute_before(self, should_not_execute)
         my_class.execute_pre(self, actual_pre, method_object, *args)
 
         result = method_object.bind(self).call(*args, &block)
 
-        my_class.execute_after(self, should_not_execute)
         my_class.execute_post(self, actual_post, method_object, *args, result)
         my_class.execute_invariants(self, should_not_execute)
 
