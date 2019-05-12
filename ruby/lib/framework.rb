@@ -13,29 +13,6 @@ class PreAndPosContext
   end
 end
 
-module Before
-  def before(observed)
-    observed.instance_variable_set :@before_procs, []
-
-    def observed.before_procs
-      @before_procs
-    end
-  end
-
-end
-
-module After
-
-  def after(observed)
-    observed.instance_variable_set :@after_procs, []
-
-    def observed.after_procs
-      @after_procs
-    end
-  end
-
-end
-
 module InvariantProcs
 
   def invariant_procs(observed)
@@ -87,9 +64,7 @@ module PreAndPost
 
     def observed.execute_pre(instance, actual_pre, method_object, *args)
       unless actual_pre.nil?
-        context = PreAndPosContext.new(instance)
-        parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
-        parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+        context = generate_pre_and_post_context(args, instance, method_object)
         pre_ok = context.instance_exec &actual_pre
         unless pre_ok
           raise PreError
@@ -99,9 +74,7 @@ module PreAndPost
 
     def observed.execute_post(instance, actual_post, method_object, *args, result)
       unless actual_post.nil?
-        context = PreAndPosContext.new(instance)
-        parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
-        parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+        context = generate_pre_and_post_context(args, instance, method_object)
         post_ok = context.instance_exec(result, &actual_post)
         unless post_ok
           raise PostError
@@ -109,8 +82,16 @@ module PreAndPost
       end
     end
 
+    def observed.generate_pre_and_post_context(args, instance, method_object)
+      context = PreAndPosContext.new(instance)
+      parameter_list = method_object.parameters.map {|param| param[1].to_s}.zip(args)
+      parameter_list.each {|parameter| context.register parameter[0], parameter[1]}
+      context
+    end
 
   end
+
+
 end
 
 module GeneralExclusions
