@@ -5,8 +5,7 @@ class PreAndPosContext
   end
 
   def register(parameter_name, parameter_value)
-    singleton_class.send(:attr_accessor, parameter_name)
-    self.send("#{parameter_name}=", parameter_value)
+    singleton_class.define_method(:"#{parameter_name}") {parameter_value}
   end
 
   def method_missing(method_name, *args, &block)
