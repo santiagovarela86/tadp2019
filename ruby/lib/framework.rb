@@ -113,7 +113,7 @@ module GeneralExclusions
 end
 
 
-module MyMixin
+module TADPFramework
   extend InvariantProcs
   extend PreAndPost
   extend GeneralExclusions
@@ -133,7 +133,7 @@ module MyMixin
     def observed.method_added(meth)
       unless @called_internal
         @called_internal = true
-        MyMixin.inject(self, meth) #This will call method_added itself, the condition prevents infinite recursion.
+        TADPFramework.inject(self, meth) #This will call method_added itself, the condition prevents infinite recursion.
         @called_internal = false
       end
     end

@@ -1,4 +1,4 @@
-describe MyMixin do
+describe TADPFramework do
 
   it "debería fallar" do
     some_instance = SomeTestClass.new(1, 11)

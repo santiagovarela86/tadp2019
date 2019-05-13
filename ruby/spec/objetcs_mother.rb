@@ -16,7 +16,7 @@ end
 
 
 class SomeTestClass
-  include MyMixin
+  include TADPFramework
   include AnotherModule
   include SomeModule
 
@@ -48,7 +48,7 @@ class SomeTestClass
 end
 
 class Operaciones
-  include MyMixin
+  include TADPFramework
   #precondición de dividir
   pre {divisor != 0}
   #postcondición de dividir
@@ -70,7 +70,7 @@ end
 #######################################
 class Pila
 
-  include MyMixin
+  include TADPFramework
 
   attr_accessor :current_node, :capacity
 
@@ -121,7 +121,7 @@ end
 #######################################
 class ClaseParaTest
 
-  include MyMixin
+  include TADPFramework
 
   attr_accessor :atributo1, :atributo2, :atributo3, :atributo4
 
