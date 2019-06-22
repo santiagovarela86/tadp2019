@@ -4,7 +4,6 @@ import scala.util.{Failure, Success, Try}
 
 class Parseo(val string: Seq[Char]) {
   def getCaracter(): Char = string.head
-
   def getString(): Seq[Char] = string.tail
 }
 
