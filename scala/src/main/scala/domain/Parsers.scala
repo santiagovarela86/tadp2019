@@ -18,7 +18,7 @@ case object anyChar extends Parser {
       if (string.isEmpty()) Failure(new Throwable) else
         Success(new Parseo(string))
     
-      Try(new Parseo(string)) //POR QUE FALLA EL TEST DE ESTO??? NO PINCHA SI ENTRA UN STRING VACIO
+      //Try(new Parseo(string)) //POR QUE FALLA EL TEST DE ESTO??? NO PINCHA SI ENTRA UN STRING VACIO
     }
 }
 
