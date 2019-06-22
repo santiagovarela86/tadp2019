@@ -10,3 +10,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "org.scalactic" %% "scalactic" % "3.0.5"
 )
+
+EclipseKeys.withSource := true
+EclipseKeys.withJavadoc := true
