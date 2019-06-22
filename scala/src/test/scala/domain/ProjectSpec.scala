@@ -11,15 +11,15 @@ class Parser_anyChar_Test {
   
   @Test
   def anychar_test_successful() = {
-    var resultado = anyChar ("hola")
-    assertEquals(true, resultado.isSuccess)
-    assertEquals('h', resultado.get.getValor())
+    var parseo = anyChar ("hola")
+    assertEquals(true, parseo.isSuccess)
+    assertEquals('h', parseo.get.getValor())
   }
   
   @Test
   def anychar_test_failure() = {
-    var resultado = anyChar ("")
-    assertEquals(false, resultado.isSuccess)
+    var parseo = anyChar ("")
+    assertEquals(false, parseo.isSuccess)
   }
 }
 
@@ -30,20 +30,40 @@ class Parser_char_Test {
   
   @Test
   def char_test_successful() = {
-    var resultado = char('h') ("hola")
-    assertEquals(true, resultado.isSuccess)
-    assertEquals('h', resultado.get.getValor())
+    var parseo = char('h') ("hola")
+    assertEquals(true, parseo.isSuccess)
+    assertEquals('h', parseo.get.getValor())
   }
   
   @Test
   def char_test_failure_char() = {
-    var resultado = char('c') ("hola")
-    assertEquals(false, resultado.isSuccess)
+    var parseo = char('c') ("hola")
+    assertEquals(false, parseo.isSuccess)
   }
   
   @Test
   def char_test_failure_empty() = {
-    var resultado = char('c') ("")
-    assertEquals(false, resultado.isSuccess)
+    var parseo = char('c') ("")
+    assertEquals(false, parseo.isSuccess)
+  }
+}
+
+class Parser_void_Test {  
+  @Before
+  def setup() = {
+  }
+  
+  @Test
+  def void_test_successful() = {
+    var parseo = void ("hola")
+    assertEquals(true, parseo.isSuccess)
+    assertEquals(Unit, parseo.get.getValor()) //FALLA, COMO HAGO PARA QUE EL PARSEO TENGA O UNIT O UN CHAR? MAYBE?
+    assertEquals("ola", parseo.get.getResto())
+  }
+  
+  @Test
+  def void_test_failure_empty() = {
+    var parseo = void ("")
+    assertEquals(false, parseo.isSuccess)
   }
 }

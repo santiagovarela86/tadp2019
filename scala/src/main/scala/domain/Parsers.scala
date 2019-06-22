@@ -30,7 +30,11 @@ case object char extends Parser {
 }
 
 case object void extends Parser {
-  def apply(string: String): Try[Parseo] = Try(new Parseo(string.tail))
+  def apply(string: String): Try[Parseo] = 
+    {
+      if (string.isEmpty()) Failure(new Throwable) else
+        Try(new Parseo(string.tail))
+    }
 }
 
 case object letter extends Parser {
