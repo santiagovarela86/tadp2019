@@ -21,12 +21,12 @@ case object anyChar extends Parser {
 }
 
 case object char extends Parser {
-  def apply(string: String, caracter: Char): Try[Parseo] = 
-    {
-      if (string.isEmpty()) Failure(new Throwable) else
+  def apply(caracter : Char)(string: String): Try[Parseo] = 
+  {
+    if (string.isEmpty()) Failure(new Throwable) else
         if (string.head == caracter) Success(new Parseo(string)) else 
           Failure(new Throwable)
-    }
+  }
 }
 
 case object void extends Parser {

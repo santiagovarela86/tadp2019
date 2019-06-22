@@ -30,20 +30,20 @@ class Parser_char_Test {
   
   @Test
   def char_test_successful() = {
-    var resultado = char ("hola", 'h')
+    var resultado = char('h') ("hola")
     assertEquals(true, resultado.isSuccess)
     assertEquals('h', resultado.get.getValor())
   }
   
   @Test
   def char_test_failure_char() = {
-    var resultado = char ("hola", 'c')
+    var resultado = char('c') ("hola")
     assertEquals(false, resultado.isSuccess)
   }
   
   @Test
   def char_test_failure_empty() = {
-    var resultado = char ("", 'c')
+    var resultado = char('c') ("")
     assertEquals(false, resultado.isSuccess)
   }
 }
