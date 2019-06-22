@@ -17,6 +17,8 @@ case object anyChar extends Parser {
     {
       if (string.isEmpty()) Failure(new Throwable) else
         Success(new Parseo(string))
+    
+      Try(new Parseo(string)) //POR QUE FALLA EL TEST DE ESTO??? NO PINCHA SI ENTRA UN STRING VACIO
     }
 }
 
@@ -32,8 +34,7 @@ case object char extends Parser {
 case object void extends Parser {
   def apply(string: String): Try[Parseo] = 
     {
-      if (string.isEmpty()) Failure(new Throwable) else
-        Try(new Parseo(string.tail))
+      Try(new Parseo(string.tail)) //Aca no hace falta preguntar si esta vacio, por que en anychar si hace falta?
     }
 }
 
