@@ -6,7 +6,7 @@ abstract class ResultadoParseo {
   def getResto(): Any
   def isSuccess(): Boolean
 }
-  
+
 class ParseoExitoso(val str: String) extends ResultadoParseo {
   def getValor(): Char = str.head
   def getResto(): String = str.tail
@@ -33,6 +33,9 @@ class ErrorDeParseo extends ResultadoParseo {
 
 //PARSERS
 trait Parser2
+{
+   
+}
 
 case object anyChar2 extends Parser2 {
   def apply(string: String): ResultadoParseo = 
