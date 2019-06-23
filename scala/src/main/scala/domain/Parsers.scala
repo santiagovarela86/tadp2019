@@ -39,22 +39,36 @@ case object void extends Parser {
 }
 
 case object letter extends Parser {
-  def apply(string: String): Try[Parseo] = if (string.head.isLetter) Success(new Parseo(string)) else Failure(new Throwable)
+  def apply(string: String): Try[Parseo] = 
+    {
+      if (string.isEmpty()) Failure(new Throwable) else
+        if (string.head.isLetter) Success(new Parseo(string)) else Failure(new Throwable)  
+    }
 }
 
 case object digit extends Parser {
-  def apply(string: String): Try[Parseo] = if (string.head.isDigit) Success(new Parseo(string)) else Failure(new Throwable)
+  def apply(string: String): Try[Parseo] = 
+    {
+      if (string.isEmpty()) Failure(new Throwable) else
+        if (string.head.isDigit) Success(new Parseo(string)) else Failure(new Throwable)
+    }
 }
 
 case object alphaNum extends Parser {
-  def apply(string: String): Try[Parseo] = if (string.head.isLetter || string.head.isDigit) Success(new Parseo(string)) else Failure(new Throwable)
+  def apply(string: String): Try[Parseo] = 
+    {
+      if (string.isEmpty()) Failure(new Throwable) else
+        if (string.head.isLetter || string.head.isDigit) Success(new Parseo(string)) else Failure(new Throwable)
+    }
 }
 
 case object string extends Parser {
-  def apply(string: String, substring: String): Try[Parseo] = if (string.startsWith(substring)) Success(new Parseo(string)) else Failure(new Throwable)
+  def apply(string: String, substring: String): Try[Parseo] = 
+    {
+      if (string.isEmpty()) Failure(new Throwable) else
+        if (string.startsWith(substring)) Success(new Parseo(string)) else Failure(new Throwable)
+    }
 }
-
-
 
 // Imprimiendo valores
 object Algo {

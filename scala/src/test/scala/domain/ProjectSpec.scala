@@ -57,7 +57,7 @@ class Parser_void_Test {
   def void_test_successful() = {
     var parseo = void ("hola")
     assertEquals(true, parseo.isSuccess)
-    assertEquals(Unit, parseo.get.getValor()) //FALLA, COMO HAGO PARA QUE EL PARSEO TENGA O UNIT O UN CHAR? MAYBE?
+    assertEquals(Unit, parseo.get.getValor()) //FALLA, COMO HAGO PARA QUE EL PARSEO TENGA O UNIT O UN CHAR? OPTION? EITHER?
     assertEquals("ola", parseo.get.getResto())
   }
   
