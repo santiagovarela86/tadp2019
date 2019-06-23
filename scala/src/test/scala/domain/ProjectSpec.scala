@@ -11,14 +11,14 @@ class Parser_anyChar_Test {
   
   @Test
   def anychar_test_successful() = {
-    var parseo = anyChar ("hola")
+    var parseo = anyChar2 ("hola")
     assertEquals(true, parseo.isSuccess)
-    assertEquals('h', parseo.get.getValor())
+    assertEquals('h', parseo.getValor())
   }
   
   @Test
   def anychar_test_failure() = {
-    var parseo = anyChar ("")
+    var parseo = anyChar2 ("")
     assertEquals(false, parseo.isSuccess)
   }
 }
@@ -30,20 +30,20 @@ class Parser_char_Test {
   
   @Test
   def char_test_successful() = {
-    var parseo = char('h') ("hola")
+    var parseo = char2('h') ("hola")
     assertEquals(true, parseo.isSuccess)
-    assertEquals('h', parseo.get.getValor())
+    assertEquals('h', parseo.getValor())
   }
   
   @Test
   def char_test_failure_char() = {
-    var parseo = char('c') ("hola")
+    var parseo = char2('c') ("hola")
     assertEquals(false, parseo.isSuccess)
   }
   
   @Test
   def char_test_failure_empty() = {
-    var parseo = char('c') ("")
+    var parseo = char2('c') ("")
     assertEquals(false, parseo.isSuccess)
   }
 }
@@ -55,15 +55,15 @@ class Parser_void_Test {
   
   @Test
   def void_test_successful() = {
-    var parseo = void ("hola")
+    var parseo = void2 ("hola")
     assertEquals(true, parseo.isSuccess)
-    assertEquals(Unit, parseo.get.getValor()) //FALLA, COMO HAGO PARA QUE EL PARSEO TENGA O UNIT O UN CHAR? OPTION? EITHER?
-    assertEquals("ola", parseo.get.getResto())
+    assertEquals(Unit, parseo.getValor())
+    assertEquals("ola", parseo.getResto())
   }
   
   @Test
   def void_test_failure_empty() = {
-    var parseo = void ("")
+    var parseo = void2 ("")
     assertEquals(false, parseo.isSuccess)
   }
 }
