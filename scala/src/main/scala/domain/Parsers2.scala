@@ -2,7 +2,7 @@ package domain
 
 //RESULTADOS DE PARSEO
 abstract class ResultadoParseo { 
-  def getValor(): AnyVal
+  def getValor(): Any
   def getResto(): Any
   def isSuccess(): Boolean
 }
@@ -10,6 +10,12 @@ abstract class ResultadoParseo {
 class ParseoExitoso(val str: String) extends ResultadoParseo {
   def getValor(): Char = str.head
   def getResto(): String = str.tail
+  def isSuccess(): Boolean = true
+}
+
+class ParseoExitosoString(val str: String, val rest: String) extends ResultadoParseo {
+  def getValor(): String = str
+  def getResto(): String = rest
   def isSuccess(): Boolean = true
 }
   
@@ -34,7 +40,7 @@ case object char2 extends Parser2 {
 
 case object void2 extends Parser2 {
   def apply(string: String): ResultadoParseo = 
-    if (string.isEmpty()) new ErrorDeParseo else new ParseoExitoso(string.tail)
+    if (string.isEmpty()) new ErrorDeParseo else new ParseoExitoso(string) //anyChar2(string)
 }
 
 case object letter2 extends Parser2 {
@@ -50,9 +56,10 @@ case object digit2 extends Parser2 {
 case object alphaNum2 extends Parser2 {
   def apply(string: String): ResultadoParseo = 
     if (string.isEmpty() || (!string.head.isLetter && !string.head.isDigit)) new ErrorDeParseo else new ParseoExitoso(string)
+  //ESTO PODRIA REEMPLAZARSE POR UN COMBINATOR DE DIGIT Y LETTER
 }
 
 case object string2 extends Parser2 {
   def apply(string: String, substring: String): ResultadoParseo = 
-    if (string.isEmpty() || !string.startsWith(substring)) new ErrorDeParseo else new ParseoExitoso(string)
+    if (string.isEmpty() || !string.startsWith(substring)) new ErrorDeParseo else new ParseoExitosoString(substring, string.stripPrefix(substring))
 }
