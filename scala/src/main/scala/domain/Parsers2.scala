@@ -13,6 +13,12 @@ class ParseoExitoso(val str: String) extends ResultadoParseo {
   def isSuccess(): Boolean = true
 }
 
+class ParseoExitosoVoid(val str: String) extends ResultadoParseo {
+  def getValor(): Unit = ()
+  def getResto(): String = str.tail
+  def isSuccess(): Boolean = true
+}
+
 class ParseoExitosoString(val str: String, val rest: String) extends ResultadoParseo {
   def getValor(): String = str
   def getResto(): String = rest
@@ -40,7 +46,7 @@ case object char2 extends Parser2 {
 
 case object void2 extends Parser2 {
   def apply(string: String): ResultadoParseo = 
-    if (string.isEmpty()) new ErrorDeParseo else new ParseoExitoso(string) //anyChar2(string)
+    if (string.isEmpty()) new ErrorDeParseo else new ParseoExitosoVoid(string)
 }
 
 case object letter2 extends Parser2 {

@@ -59,7 +59,7 @@ class Parser_void_Test {
     var parseo = void2 ("hola")
     assertEquals(true, parseo.isSuccess)
     assertEquals("ola", parseo.getResto())
-    assertEquals(None, parseo.getValor()) //HAY QUE VER COMO ACOMODAR ESTE CASO DE USO (QUE TIENE QUE DEVOLVER UNIT) EITHER? OPTION?
+    assertEquals((), parseo.getValor())
   }
   
   @Test
