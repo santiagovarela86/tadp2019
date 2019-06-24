@@ -4,7 +4,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.Assert._
 
-class Parser_anyChar2_Test {  
+class Parser2_anyChar2_Test {  
   @Before
   def setup() = {
   }
@@ -23,7 +23,7 @@ class Parser_anyChar2_Test {
   }
 }
 
-class Parser_char2_Test {  
+class Parser2_char2_Test {  
   @Before
   def setup() = {
   }
@@ -49,7 +49,7 @@ class Parser_char2_Test {
   }
 }
 
-class Parser_void2_Test {  
+class Parser2_void2_Test {  
   @Before
   def setup() = {
   }
@@ -69,7 +69,7 @@ class Parser_void2_Test {
   }
 }
 
-class Parser_letter2_Test {  
+class Parser2_letter2_Test {  
   @Before
   def setup() = {
   }
@@ -95,7 +95,7 @@ class Parser_letter2_Test {
   }
 }
 
-class Parser_digit2_Test {  
+class Parser2_digit2_Test {  
   @Before
   def setup() = {
   }
@@ -121,7 +121,7 @@ class Parser_digit2_Test {
   }
 }
 
-class Parser_alphanum2_Test {  
+class Parser2_alphanum2_Test {  
   @Before
   def setup() = {
   }
@@ -155,7 +155,7 @@ class Parser_alphanum2_Test {
   }
 }
 
-class Parser_string2_Test {  
+class Parser2_string2_Test {  
   @Before
   def setup() = {
   }
