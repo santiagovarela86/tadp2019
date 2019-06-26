@@ -1,4 +1,4 @@
-package domain
+package intento1
 
 import org.junit.Before
 import org.junit.Test

@@ -1,4 +1,4 @@
-package domain
+package intento1
 
 //trait Parsers
 //type Parser[T] = String => ParseResult[T]

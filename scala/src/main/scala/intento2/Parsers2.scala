@@ -1,4 +1,4 @@
-package domain
+package intento2
 
 //RESULTADOS DE PARSEO
 abstract class ResultadoParseo { 
@@ -32,43 +32,43 @@ class ErrorDeParseo extends ResultadoParseo {
 }
 
 //PARSERS
-trait Parser2
+trait Parser
 {
    
 }
 
-case object anyChar2 extends Parser2 {
+case object anyChar extends Parser {
   def apply(string: String): ResultadoParseo = 
     if (string.isEmpty()) new ErrorDeParseo else new ParseoExitoso(string)
 }
 
-case object char2 extends Parser2 {
+case object char extends Parser {
   def apply(caracter : Char)(string: String): ResultadoParseo = 
     if (string.isEmpty() || string.head != caracter) new ErrorDeParseo else new ParseoExitoso(string)
 }
 
-case object void2 extends Parser2 {
+case object void extends Parser {
   def apply(string: String): ResultadoParseo = 
     if (string.isEmpty()) new ErrorDeParseo else new ParseoExitosoVoid(string)
 }
 
-case object letter2 extends Parser2 {
+case object letter extends Parser {
   def apply(string: String): ResultadoParseo = 
     if (string.isEmpty() || !string.head.isLetter) new ErrorDeParseo else new ParseoExitoso(string)
 }
 
-case object digit2 extends Parser2 {
+case object digit extends Parser {
   def apply(string: String): ResultadoParseo = 
     if (string.isEmpty() || !string.head.isDigit) new ErrorDeParseo else new ParseoExitoso(string)
 }
 
-case object alphaNum2 extends Parser2 {
+case object alphaNum extends Parser {
   def apply(string: String): ResultadoParseo = 
     if (string.isEmpty() || (!string.head.isLetter && !string.head.isDigit)) new ErrorDeParseo else new ParseoExitoso(string)
   //ESTO PODRIA REEMPLAZARSE POR UN COMBINATOR DE DIGIT Y LETTER
 }
 
-case object string2 extends Parser2 {
+case object string extends Parser {
   def apply(string: String, substring: String): ResultadoParseo = 
     if (string.isEmpty() || !string.startsWith(substring)) new ErrorDeParseo else new ParseoExitosoString(substring, string.stripPrefix(substring))
 }
