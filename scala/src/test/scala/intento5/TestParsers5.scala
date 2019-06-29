@@ -3,7 +3,7 @@ package intento5
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert._
-
+/*
 class Parser_anyChar_Test {
   val parserAnyChar = anyChar
 
@@ -29,7 +29,7 @@ class Parser_anyChar_Test {
     assertEquals(Result.Failure("Empty string",""), resultadoParseo)
   }
 }
-/*
+
 class Parser_char_Test {
   val parserChar = Parser.char _
 

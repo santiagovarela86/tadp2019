@@ -1,5 +1,5 @@
 package intento5
-
+/*
 trait SimpleResult {
   type Input
 
@@ -59,3 +59,4 @@ object char extends SimpleResult {
     case Input(a, b) 
   }
 }*/
+*/

@@ -1,7 +1,7 @@
 package intento3
 
 import scala.util.{Try, Success, Failure}
-
+/*
 ////////////////////////////////
 //PARSE RESULTS
 ////////////////////////////////
@@ -118,4 +118,4 @@ class string extends ComplexStringParser[String] {
     case Failure(exception) => Failure(exception)
   }
   */
-}
+}*/

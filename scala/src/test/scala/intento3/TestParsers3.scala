@@ -3,7 +3,7 @@ package intento3
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert._
-
+/*
 class Parser3_anyChar3_Test {
   val parserAnyChar = new anyChar
 
@@ -235,3 +235,4 @@ class Parser3_string3_Test {
     assertEquals(None, resultadoParseo.toOption)
   }
 }
+*/

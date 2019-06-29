@@ -3,7 +3,7 @@ package intento2
 import org.junit.Before
 import org.junit.Test
 import org.junit.Assert._
-
+/*
 class Parser2_anyChar2_Test {  
   @Before
   def setup() = {
@@ -186,3 +186,4 @@ class Parser2_string2_Test {
     assertEquals(false, parseo.isSuccess)
   }
 }
+*/

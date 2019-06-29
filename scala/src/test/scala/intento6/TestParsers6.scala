@@ -219,3 +219,59 @@ class Parser_string_Test {
     assertEquals(Failure("Input Parameter Error"), resultadoParseo)
   }
 }
+
+class ParserCombinators_Test {
+  val alphaNumCombined = digit <|> letter  
+  val concatLetterLetter = letter <> letter
+  
+  @Before
+  def setup() = {
+  }
+
+  @Test
+  def parser_combinator_alphaNum_number() = {
+    var resultadoParseo = alphaNumCombined ("1234")
+    assertEquals(Success('1',"234"), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_alphaNum_letter() = {
+    var resultadoParseo = alphaNumCombined ("hola")
+    assertEquals(Success('h',"ola"), resultadoParseo)   
+  }
+
+  @Test
+  def parser_combinator_alphaNum_empty() = {
+    var resultadoParseo = alphaNumCombined ("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)  
+  }
+  
+  @Test
+  def parser_combinator_alphaNum_wrong_parameters() = {
+    var resultadoParseo = alphaNumCombined (9999)
+    assertEquals(Failure("Input Parameter Error"), resultadoParseo)
+  }
+@Test
+  def parser_combinator_letterLetter_number_letter() = {
+    var resultadoParseo = concatLetterLetter ("9z")
+    assertEquals(Failure("Not a letter"), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_letterLetter_letter_letter() = {
+    var resultadoParseo = concatLetterLetter ("az")
+    assertEquals(Success(('a','z'),""), resultadoParseo)  
+  }
+  
+  @Test
+  def parser_combinator_letterLetter_letter_number() = {
+    var resultadoParseo = concatLetterLetter ("z9")
+    assertEquals(Failure("Not a letter"), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_letterLetter_empty() = {
+    var resultadoParseo = concatLetterLetter ("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)  
+  }
+}

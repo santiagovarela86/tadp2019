@@ -51,6 +51,21 @@ case object char extends Parser[Char] {
       Failure("Not the same char")
     case _ => Failure("Input Parameter Error") //????
   }
+  /*
+  var char: Char = 'a'
+
+  def apply(input: Any): Result[Char] = input match {
+    case (caracter: Char) => {
+      (string: String) => {
+      char = caracter
+      properApply(string)}
+    }
+    case _ => Failure("Input Parameter Error") //????
+  }
+
+  def properApply(string: String) : Result[Char] = string match {
+    case string => if (string.isEmpty()) Failure("Empty Input String") else if (string.head == char) Success(string.head, string.tail) else Failure("Not the same char")
+  }*/
 }
 
 case object void extends Parser[Unit] {

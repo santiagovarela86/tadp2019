@@ -1,6 +1,7 @@
 package intento1
 
 //trait Parsers
+/*
 //type Parser[T] = String => ParseResult[T]
 
 ////////////////////////////////
@@ -98,3 +99,4 @@ class string extends ComplexStringParser[String] {
     case _ => if (inputString.startsWith(subString)) Success(subString, inputString.stripPrefix(subString)) else Failure()
   }
 }
+*/

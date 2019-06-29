@@ -1,5 +1,5 @@
 package intento2
-
+/*
 //RESULTADOS DE PARSEO
 abstract class ResultadoParseo { 
   def getValor(): Any
@@ -72,3 +72,4 @@ case object string extends Parser {
   def apply(string: String, substring: String): ResultadoParseo = 
     if (string.isEmpty() || !string.startsWith(substring)) new ErrorDeParseo else new ParseoExitosoString(substring, string.stripPrefix(substring))
 }
+*/

@@ -2,6 +2,7 @@ package intento4
 
 import scala.util.{ Try, Success, Failure }
 
+/*
 class ParseResult[A](result: A, resto: String) {
   def getValor: A = result
   def getResto: String = resto
@@ -66,3 +67,4 @@ trait Parser {
 }
 
 case object Parser extends Parser
+*/
