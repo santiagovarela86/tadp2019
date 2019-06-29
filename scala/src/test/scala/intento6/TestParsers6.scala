@@ -223,6 +223,8 @@ class Parser_string_Test {
 class ParserCombinators_Test {
   val alphaNumCombined = digit <|> letter  
   val concatLetterLetter = letter <> letter
+  val rightMost = letter ~> digit
+  val leftMost = letter <~ digit
   
   @Before
   def setup() = {
@@ -251,7 +253,8 @@ class ParserCombinators_Test {
     var resultadoParseo = alphaNumCombined (9999)
     assertEquals(Failure("Input Parameter Error"), resultadoParseo)
   }
-@Test
+  
+  @Test
   def parser_combinator_letterLetter_number_letter() = {
     var resultadoParseo = concatLetterLetter ("9z")
     assertEquals(Failure("Not a letter"), resultadoParseo)  
@@ -273,5 +276,53 @@ class ParserCombinators_Test {
   def parser_combinator_letterLetter_empty() = {
     var resultadoParseo = concatLetterLetter ("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)  
+  }
+  
+  @Test
+  def parser_combinator_rightmost_successful() = {
+    var resultadoParseo = rightMost ("z9")
+    assertEquals(Success('9',""), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_rightmost_failure() = {
+    var resultadoParseo = rightMost ("99")
+    assertEquals(Failure("Not a letter"), resultadoParseo)  
+  }
+  
+  @Test
+  def parser_combinator_rightmost_failure_empty() = {
+    var resultadoParseo = rightMost ("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_rightmost_wrong_parameters() = {
+    var resultadoParseo = rightMost (9)
+    assertEquals(Failure("Input Parameter Error"), resultadoParseo)  
+  }
+  
+  @Test
+  def parser_combinator_leftmost_successful() = {
+    var resultadoParseo = leftMost ("z9")
+    assertEquals(Success('z',""), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_leftmost_failure() = {
+    var resultadoParseo = leftMost ("99")
+    assertEquals(Failure("Not a letter"), resultadoParseo)  
+  }
+  
+  @Test
+  def parser_combinator_leftmost_failure_empty() = {
+    var resultadoParseo = leftMost ("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)  
+  }
+
+  @Test
+  def parser_combinator_leftmost_wrong_parameters() = {
+    var resultadoParseo = leftMost (9)
+    assertEquals(Failure("Input Parameter Error"), resultadoParseo)  
   }
 }

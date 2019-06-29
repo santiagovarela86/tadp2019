@@ -1,9 +1,20 @@
 package intento6
 
-abstract class Result[+T] //SI NO LE PONGO EL +, NO FUNCIONA DEVOLVER UN FAILURE QUE ES UN RESULT DE NOTHING
+//SI NO LE PONGO EL +T, NO FUNCIONA DEVOLVER UN FAILURE QUE ES UN RESULT DE NOTHING
+abstract class Result[+T] { 
+  def map[U](f: T => U): Result[U] //convierte de Result[T] a Result[U]
+  def flatMapNext[U](f: T => Parser[U]): Result[U]
+}
 
-case class Success[T](result: T, next: String) extends Result[T]
-case class Failure(msg: String) extends Result[Nothing]
+case class Success[T](result: T, next: String) extends Result[T] {
+  def map[U](f: T => U) = Success(f(result), next) //convierte de Success[T] a Success[U]
+  def flatMapNext[U](f: T => Parser[U]) = f(result)(next)
+}
+
+case class Failure(msg: String) extends Result[Nothing] {
+  def map[U](f: Nothing => U) = this //Convierte de Failure a Failure
+  def flatMapNext[U](f: Nothing => Parser[U]) = this
+}
 
 trait Parser[T] {
   //type Input //INPUT DEBERIA PODER SER UN STRING... O UN (CHAR => STRING) O UN (STRING => STRING)... (???)
@@ -11,6 +22,14 @@ trait Parser[T] {
 
   def apply(input: Any): Result[T] //ACA EL INPUT ERA DE TIPO INPUT, Y EN CADA PARSER TAMBIEN ERA INPUT. CON EL ANY PIERDO EL CHEQUEO DE TIPOS
   //Y TENGO QUE TIRAR UN FAILURE NUEVO SI LE PASO MAL LOS PARAMETROS AL PARSER (SI LE PASO UN INT POR EJEMPLO)
+  
+  def map[U](f: T => U): Parser[U] = new Parser[U] {
+    def apply(in: Any) = Parser.this(in) map (f) //Any? //para hacer esto necesito el map en Result[T] //Convierto de Parser[T] a Parser[U]
+  }
+
+  def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
+    def apply(in: Any) = Parser.this(in) flatMapNext (f) //ANY? //para hacer esto necesito el flatmapnext en el result[T]
+  }
 
   def <|>[U >: T](p: => Parser[U]): Parser[U] = {
     new Parser[U] {
@@ -34,6 +53,20 @@ trait Parser[T] {
         }
     }
   }
+
+  def ~>[U](p: => Parser[U]): Parser[U] = {
+    for (
+      a <- this; //para hacer esto necesito el flatmap en Parser[T]
+      b <- p //para hacer esto necesito el map en Parser[U]
+    ) yield b
+  }
+
+  def <~[U](p: => Parser[U]): Parser[T] = {
+    for (
+      a <- this; //para hacer esto necesito el flatmap en Parser[T]
+      b <- p //para hacer esto necesito el map en Parser[U]
+    ) yield a
+  }
 }
 
 case object anyChar extends Parser[Char] {
@@ -46,26 +79,11 @@ case object anyChar extends Parser[Char] {
 
 case object char extends Parser[Char] {
   def apply(input: Any): Result[Char] = input match {
-    case (caracter: Char, inputString: String) => if (inputString.isEmpty()) Failure("Empty Input String") else //PUEDO CURRIFICAR ESTO?
+    case (caracter: Char, inputString: String) => if (inputString.isEmpty()) Failure("Empty Input String") else
     if (inputString.head == caracter) Success(inputString.head, inputString.tail) else
       Failure("Not the same char")
     case _ => Failure("Input Parameter Error") //????
   }
-  /*
-  var char: Char = 'a'
-
-  def apply(input: Any): Result[Char] = input match {
-    case (caracter: Char) => {
-      (string: String) => {
-      char = caracter
-      properApply(string)}
-    }
-    case _ => Failure("Input Parameter Error") //????
-  }
-
-  def properApply(string: String) : Result[Char] = string match {
-    case string => if (string.isEmpty()) Failure("Empty Input String") else if (string.head == char) Success(string.head, string.tail) else Failure("Not the same char")
-  }*/
 }
 
 case object void extends Parser[Unit] {
@@ -102,7 +120,7 @@ case object alphaNum extends Parser[Char] {
 
 case object string extends Parser[String] {
   def apply(input: Any): Result[String] = input match {
-    case (subString: String, inputString: String) => if (inputString.isEmpty() || subString.isEmpty()) Failure("Empty Input String") else //PUEDO CURRIFICAR ESTO?
+    case (subString: String, inputString: String) => if (inputString.isEmpty() || subString.isEmpty()) Failure("Empty Input String") else
     if (inputString.startsWith(subString)) Success(subString, inputString.stripPrefix(subString)) else
       Failure("Not same string")
     case _ => Failure("Input Parameter Error") //????
