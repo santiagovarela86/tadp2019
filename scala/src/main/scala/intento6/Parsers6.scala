@@ -3,17 +3,17 @@ package intento6
 //SI NO LE PONGO EL +T, NO FUNCIONA DEVOLVER UN FAILURE QUE ES UN RESULT DE NOTHING
 abstract class Result[+T] { 
   def map[U](f: T => U): Result[U] //convierte de Result[T] a Result[U]
-  def flatMapNext[U](f: T => Parser[U]): Result[U]
+  def flatMap[U](f: T => Parser[U]): Result[U]
 }
 
-case class Success[T](result: T, next: String) extends Result[T] {
-  def map[U](f: T => U) = Success(f(result), next) //convierte de Success[T] a Success[U]
-  def flatMapNext[U](f: T => Parser[U]) = f(result)(next)
+case class Success[T](result: T, resto: String) extends Result[T] {
+  def map[U](f: T => U) = Success(f(result), resto) //convierte de Success[T] a Success[U]
+  def flatMap[U](f: T => Parser[U]) = f(result)(resto)
 }
 
 case class Failure(msg: String) extends Result[Nothing] {
   def map[U](f: Nothing => U) = this //Convierte de Failure a Failure
-  def flatMapNext[U](f: Nothing => Parser[U]) = this
+  def flatMap[U](f: Nothing => Parser[U]) = this
 }
 
 trait Parser[T] {
@@ -28,7 +28,7 @@ trait Parser[T] {
   }
 
   def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
-    def apply(in: Any) = Parser.this(in) flatMapNext (f) //ANY? //para hacer esto necesito el flatmapnext en el result[T]
+    def apply(in: Any) = Parser.this(in) flatMap (f) //ANY? //para hacer esto necesito el flatmap en el result[T]
   }
 
   def <|>[U >: T](p: => Parser[U]): Parser[U] = {
@@ -45,8 +45,8 @@ trait Parser[T] {
     new Parser[Tuple2[T, U]] {
       def apply(in: Any) =
         Parser.this(in) match {
-          case Success(x, next) => p(next) match {
-            case Success(x2, next2) => Success((x, x2), next2)
+          case Success(x, resto) => p(resto) match {
+            case Success(x2, resto2) => Success((x, x2), resto2)
             case Failure(m)         => Failure(m)
           }
           case Failure(m) => Failure(m)
