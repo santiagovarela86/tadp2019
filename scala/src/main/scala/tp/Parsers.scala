@@ -1,4 +1,4 @@
-package intento6
+package tp
 
 abstract class Result[+T] {
   def map[U](f: T => U): Result[U]

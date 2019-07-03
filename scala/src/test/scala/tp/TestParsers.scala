@@ -1,14 +1,9 @@
-package intento6
+package tp
 
-import org.junit.Before
 import org.junit.Test
 import org.junit.Assert._
 
 class Parser_anyChar_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def anychar_test_successful() = {
     var resultadoParseo = anyChar("hola")
@@ -23,10 +18,6 @@ class Parser_anyChar_Test {
 }
 
 class Parser_char_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def char_test_successful_samechar() = {
     var resultadoParseo = char('h')("hola")
@@ -53,10 +44,6 @@ class Parser_char_Test {
 }
 
 class Parser_void_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def void_test_successful() = {
     var resultadoParseo = void("hola")
@@ -71,10 +58,6 @@ class Parser_void_Test {
 }
 
 class Parser_letter_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def letter_test_successful() = {
     var resultadoParseo = letter("hola")
@@ -95,10 +78,6 @@ class Parser_letter_Test {
 }
 
 class Parser_digit_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def digit_test_successful() = {
     var resultadoParseo = digit("1234")
@@ -119,10 +98,6 @@ class Parser_digit_Test {
 }
 
 class Parser_alphanum_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def alphanum_test_successful_digit() = {
     var resultadoParseo = alphaNum("1234")
@@ -149,10 +124,6 @@ class Parser_alphanum_Test {
 }
 
 class Parser_string_Test {
-  @Before
-  def setup() = {
-  }
-
   @Test
   def string_test_successful_containsstring() = {
     var resultadoParseo = string("hola")("hola mundo")
@@ -189,10 +160,7 @@ class ParserCombinators_Test {
   val concatLetterLetter = letter <> letter
   val rightMost = letter ~> digit
   val leftMost = letter <~ digit
-
-  @Before
-  def setup() = {
-  }
+  val concatCharString = char('a') <> string(" veces")
 
   @Test
   def parser_combinator_alphaNum_number() = {
@@ -269,6 +237,30 @@ class ParserCombinators_Test {
   @Test
   def parser_combinator_leftmost_failure_empty() = {
     var resultadoParseo = leftMost("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_concat_char_string_success() = {
+    var resultadoParseo = concatCharString("a veces gano")
+    assertEquals(Success(('a', " veces"), " gano"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_concat_char_string_failure_char() = {
+    var resultadoParseo = concatCharString("dance dance dance")
+    assertEquals(Failure("Not the same char"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_concat_char_string_failure_string() = {
+    var resultadoParseo = concatCharString("a beces gano")
+    assertEquals(Failure("Not same string"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_concat_char_string_failure_empty() = {
+    var resultadoParseo = concatCharString("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 }
