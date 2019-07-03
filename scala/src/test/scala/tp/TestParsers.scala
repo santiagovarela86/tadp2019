@@ -27,6 +27,7 @@ class Parser_char_Test {
   @Test
   def char_test_failure_notAChar() = {
     var resultadoParseo = char(9)("9123") //ESTO NO DEBERIA PODER DEJARTE COMPILAR!!!... WHAT? EL 9 ES UN CHAR?
+    assertEquals(Success(9, "123"), resultadoParseo)
     assertEquals(Success('9', "123"), resultadoParseo)
   }
 
@@ -133,7 +134,7 @@ class Parser_string_Test {
   @Test
   def string_test_failure_wrongstring() = {
     var resultadoParseo = string("hola")("holgado")
-    assertEquals(Failure("Not same string"), resultadoParseo)
+    assertEquals(Failure("Not the same string"), resultadoParseo)
   }
 
   @Test
@@ -255,7 +256,7 @@ class ParserCombinators_Test {
   @Test
   def parser_combinator_concat_char_string_failure_string() = {
     var resultadoParseo = concatCharString("a beces gano")
-    assertEquals(Failure("Not same string"), resultadoParseo)
+    assertEquals(Failure("Not the same string"), resultadoParseo)
   }
 
   @Test

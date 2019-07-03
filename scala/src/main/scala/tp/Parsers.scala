@@ -31,8 +31,8 @@ trait Parser[T] {
     new Parser[U] {
       def apply(in: String) =
         Parser.this(in) match {
-          case Failure(_)    => p(in)
           case Success(x, n) => Success(x, n)
+          case Failure(_)    => p(in)
         }
     }
   }
@@ -55,6 +55,9 @@ trait Parser[T] {
       a <- this;
       b <- p
     ) yield b
+
+    //otra forma
+    //this.flatMap { (a: T) => p.map { (b: U) => { b } } }
   }
 
   def <~[U](p: => Parser[U]): Parser[T] = {
@@ -62,6 +65,9 @@ trait Parser[T] {
       a <- this;
       b <- p
     ) yield a
+    
+    //otra forma
+    //this.flatMap { (a: T) => p.map { (b: U) => { a } } }
   }
 }
 
@@ -105,7 +111,7 @@ case object string {
     new Parser[String] {
       def apply(inputString: String) = {
         if (inputString.isEmpty() || inputSubString.isEmpty()) Failure("Empty Input String") else if (inputString.startsWith(inputSubString)) Success(inputSubString, inputString.stripPrefix(inputSubString)) else
-          Failure("Not same string")
+          Failure("Not the same string")
       }
     }
   }
