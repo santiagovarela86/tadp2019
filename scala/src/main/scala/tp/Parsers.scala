@@ -143,21 +143,27 @@ trait Parser[+T] {
   //  }
 
   //ANY?
-  def *[T]: Parser[List[Any]] = {
-    new Parser[List[Any]] {
+  def * : Parser[Any] = {
+    new Parser[Any] {
       def apply(input: String) = {
         Parser.this(input) match {
           case Success(result, resto) => {
             apply(resto) match {
-              case Success(result2, resto2) => Success(List(result, result2), resto2)
-              //case _                        => Success(List(()), input)
+              case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+              case _ => Success(List(), input)
             }
-            //Success(result :: "a", resto)
           }
-          case _ => Success(List(()), input)
+          case Failure(m) => Success(List(()), input)
+          case _ => Success(List(), input)
         }
       }
     }
+  }
+
+  //SE PUEDE REEMPLAZAR ESTO?
+  private def flatten(ls: List[Any]): List[Any] = ls flatMap {
+    case i: List[_] => flatten(i)
+    case e          => List(e)
   }
 
 }
