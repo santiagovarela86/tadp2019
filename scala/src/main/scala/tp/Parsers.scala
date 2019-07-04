@@ -56,7 +56,6 @@ trait Parser[+T] {
       b <- p
     ) yield b
 
-    //otra forma
     //this.flatMap { (a: T) => p.map { (b: U) => { b } } }
   }
 
@@ -66,7 +65,6 @@ trait Parser[+T] {
       b <- p
     ) yield a
 
-    //otra forma
     //this.flatMap { (a: T) => p.map { (b: U) => { a } } }
   }
 
@@ -88,8 +86,6 @@ trait Parser[+T] {
       def apply(input: String) = {
         Parser.this(input) match {
           case Success(result, resto) => Success(result, resto)
-          //case Success(result: Char, resto)   => Success(result, resto)
-          //case Success(result: Unit, resto)   => Success(result, resto)
           case _                      => Success((), input)
         }
       }
@@ -112,12 +108,28 @@ trait Parser[+T] {
     new Parser[Any] {
       def apply(input: String) = {
         Parser.this(input) match {
-          case Failure(m) => Success(List(()), input)
           case Success(result, resto) => {
             apply(resto) match {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
             }
           }
+          case Failure(m) => Success(List(()), input)
+        }
+      }
+    }
+  }
+
+  //ANY?
+  def + : Parser[Any] = {
+    new Parser[Any] {
+      def apply(input: String) = {
+        Parser.this(input) match {
+          case Success(result, resto) => {
+            apply(resto) match {
+              case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+            }
+          }
+          case Failure(m) => Failure(m)
         }
       }
     }
@@ -129,7 +141,6 @@ trait Parser[+T] {
     case ()         => List()
     case e          => List(e)
   }
-
 }
 
 case object anyChar extends Parser[Char] {

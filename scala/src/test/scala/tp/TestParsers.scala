@@ -333,6 +333,7 @@ class ParsersII_Tests {
   val precedencia = talVezIn <> string("fija")
   val talVezChar = char('a').opt
   val charAKleene = char('a').*
+  val charAOperadorMas = char('a').+
   val mapCharADigit = digit.map({
     case '1' => 1
     case '2' => 2
@@ -431,16 +432,34 @@ class ParsersII_Tests {
   }
 
   @Test
-  def parserII_charAKleene_failure_notSameChar() = {
+  def parserII_charAKleene_success_notSameChar() = {
     var resultadoParseo = charAKleene("bbba veces")
     assertEquals(Success(List(()), "bbba veces"), resultadoParseo)
   }
 
   @Test
-  def parserII_charAKleene_failure_empty() = {
+  def parserII_charAKleene_success_empty() = {
     var resultadoParseo = charAKleene("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING, PUEDE APLICARSE 0 VECES
     assertEquals(Success(List(()), ""), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_charAOperadorMas_success() = {
+    var resultadoParseo = charAOperadorMas("aaaaa veces")
+    assertEquals(Success(List('a', 'a', 'a', 'a', 'a'), " veces"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_charAOperadorMas_failure_notSameChar() = {
+    var resultadoParseo = charAOperadorMas("bbba veces")
+    assertEquals(Failure("Not the same char"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_charAOperadorMas_failure_empty() = {
+    var resultadoParseo = charAOperadorMas("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 
   @Test
