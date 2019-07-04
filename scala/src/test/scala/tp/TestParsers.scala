@@ -334,6 +334,17 @@ class ParsersII_Tests {
   val talVezChar = char('a').opt
   val charAKleene = char('a').*
   val prueboKleenConConcat = (char('a') <> char('a') <> char('a') <> char('a') <> char('a'))
+  val mapCharADigit = digit.map({
+    case '1' => 1
+    case '2' => 2
+    case '3' => 3
+    case '4' => 4
+    case '5' => 5
+    case '6' => 6
+    case '7' => 7
+    case '8' => 8
+    case '9' => 9
+  })
 
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_A() = {
@@ -432,5 +443,22 @@ class ParsersII_Tests {
     var resultadoParseo = charAKleene("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
     assertEquals(Success(List(()), ""), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_map_mapCharADigit_success_1() = {
+    var resultadoParseo = mapCharADigit("1234")
+    assertEquals(Success(1, "234"), resultadoParseo) //el result no es un char sino un int, lo transforma la funcion que le paso al map del parser digit, este map transforma de char a digit
+  }
+  @Test
+  def parserII_map_mapCharADigit_failure() = {
+    var resultadoParseo = mapCharADigit("a234")
+    assertEquals(Failure("Not a digit"), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_map_mapCharADigit_failure_empty() = {
+    var resultadoParseo = mapCharADigit("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 }
