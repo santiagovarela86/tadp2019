@@ -107,62 +107,26 @@ trait Parser[+T] {
     }
   }
 
-  //  //ANY?
-  //  def * : Parser[List[Any]] = {
-  //    new Parser[List[Any]] {
-  //      def apply(input: String) = {
-  //        Parser.this(input) match {
-  //          case Success(result, resto) => Success(List(result, this(resto)), resto)
-  //          case _                      => Success(List(()), input)
-  //        }
-  //      }
-  //    }
-  //  }
-
-  //  //ANY?
-  //  def * [T]: Parser[Any] = {
-  //    new Parser[Any] {
-  //      def apply(input: String) = {
-  //        Parser.this(input) match {
-  //          case Success(result, resto) => {
-  //            apply(resto) match {
-  //              case Success(result2, resto2) => Success(List(result, result2), resto2).map(
-  //                    (result: List[Any]) => result match {
-  //                        case List(x,List(xs)) => List(x,xs)
-  //                        case List(x, List(())) => List(x)
-  //                      }
-  //                  )
-  //              case _                        => Success(List(()), input)
-  //            }
-  //            //Success(result :: "a", resto)
-  //          }
-  //          case _ => Success(List(()), input)
-  //        }
-  //      }
-  //    }
-  //  }
-
   //ANY?
   def * : Parser[Any] = {
     new Parser[Any] {
       def apply(input: String) = {
         Parser.this(input) match {
+          case Failure(m) => Success(List(()), input)
           case Success(result, resto) => {
             apply(resto) match {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
-              case _ => Success(List(), input)
             }
           }
-          case Failure(m) => Success(List(()), input)
-          case _ => Success(List(), input)
         }
       }
     }
   }
 
-  //SE PUEDE REEMPLAZAR ESTO?
+  //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
   private def flatten(ls: List[Any]): List[Any] = ls flatMap {
     case i: List[_] => flatten(i)
+    case ()         => List()
     case e          => List(e)
   }
 

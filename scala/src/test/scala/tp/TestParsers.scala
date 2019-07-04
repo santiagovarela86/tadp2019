@@ -333,7 +333,6 @@ class ParsersII_Tests {
   val precedencia = talVezIn <> string("fija")
   val talVezChar = char('a').opt
   val charAKleene = char('a').*
-  val prueboKleenConConcat = (char('a') <> char('a') <> char('a') <> char('a') <> char('a'))
   val mapCharADigit = digit.map({
     case '1' => 1
     case '2' => 2
@@ -428,7 +427,6 @@ class ParsersII_Tests {
   @Test
   def parserII_charAKleene_success() = {
     var resultadoParseo = charAKleene("aaaaa veces")
-    //var resultadoParseo = prueboKleenConConcat("aaaaa veces")
     assertEquals(Success(List('a', 'a', 'a', 'a', 'a'), " veces"), resultadoParseo)
   }
 
@@ -441,14 +439,14 @@ class ParsersII_Tests {
   @Test
   def parserII_charAKleene_failure_empty() = {
     var resultadoParseo = charAKleene("")
-    //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
+    //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING, PUEDE APLICARSE 0 VECES
     assertEquals(Success(List(()), ""), resultadoParseo)
   }
 
   @Test
   def parserII_map_mapCharADigit_success_1() = {
     var resultadoParseo = mapCharADigit("1234")
-    assertEquals(Success(1, "234"), resultadoParseo) //el result no es un char sino un int, lo transforma la funcion que le paso al map del parser digit, este map transforma de char a digit
+    assertEquals(Success(1, "234"), resultadoParseo)
   }
   @Test
   def parserII_map_mapCharADigit_failure() = {
