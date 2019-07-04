@@ -325,6 +325,7 @@ class ParserCombinators_Test {
 
 class ParsersII_Satisfies_Tests {
   val alphaNumCombined = digit <|> letter
+  val trueParser = string("true").const(true)
   
   val alphaNumCombinedSatisfiesIsAOr9 = alphaNumCombined.satisfies((x: Char) => x == 'a' || x == 'A' || x == '9')
 
@@ -349,6 +350,24 @@ class ParsersII_Satisfies_Tests {
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_failure_empty() = {
     var resultadoParseo = alphaNumCombinedSatisfiesIsAOr9("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_satisfies_trueParser_success() = {
+    var resultadoParseo = trueParser("true")
+    assertEquals(Success(true, ""), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_satisfies_trueParser_failure_notTrue() = {
+    var resultadoParseo = trueParser("9234")
+    assertEquals(Failure("Not the same string"), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_satisfies_trueParser_failure_empty() = {
+    var resultadoParseo = trueParser("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 }
