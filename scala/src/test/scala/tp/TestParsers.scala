@@ -372,16 +372,35 @@ class ParsersII_Tests {
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 
+//  @Test
+//  def parserII_opt_precedencia_success_infija() = {
+//    var resultadoParseo = precedencia("infija")
+//    assertEquals(Success((Some("in"), "fija"), ""), resultadoParseo) //FEO
+//  }
+//
+//  @Test
+//  def parserII_opt_precedencia_success_fija() = {
+//    var resultadoParseo = precedencia("fija")
+//    assertEquals(Success((None, "fija"), ""), resultadoParseo)
+//  }
+//
+//  @Test
+//  def parserII_opt_precedencia_success_failure_empty() = {
+//    var resultadoParseo = precedencia("")
+//    assertEquals(Failure("Empty Input String"), resultadoParseo)
+//  }
+  
+  //SIN OPTION PERO SOLO CONTEMPLA PARSERS QUE SEAN DE STRING...
   @Test
   def parserII_opt_precedencia_success_infija() = {
     var resultadoParseo = precedencia("infija")
-    assertEquals(Success((Some("in"), "fija"), ""), resultadoParseo) //FEO
+    assertEquals(Success(("in", "fija"), ""), resultadoParseo)
   }
 
   @Test
   def parserII_opt_precedencia_success_fija() = {
     var resultadoParseo = precedencia("fija")
-    assertEquals(Success((None, "fija"), ""), resultadoParseo)
+    assertEquals(Success(("", "fija"), ""), resultadoParseo)
   }
 
   @Test

@@ -50,7 +50,7 @@ trait Parser[+T] {
     }
   }
 
-  def ~>[U](p: => Parser[U]): Parser[U] = {
+  def ~>[U](p: Parser[U]): Parser[U] = {
     for (
       a <- this;
       b <- p
@@ -60,7 +60,7 @@ trait Parser[+T] {
     //this.flatMap { (a: T) => p.map { (b: U) => { b } } }
   }
 
-  def <~[U](p: => Parser[U]): Parser[T] = {
+  def <~[U](p: Parser[U]): Parser[T] = {
     for (
       a <- this;
       b <- p
@@ -82,13 +82,25 @@ trait Parser[+T] {
     }
   }
 
-  //OPTION???...
-  def opt: Parser[Option[T]] = {
-    new Parser[Option[T]] {
+  //  //OPTION???...
+  //  def opt: Parser[Option[T]] = {
+  //    new Parser[Option[T]] {
+  //      def apply(input: String) = {
+  //        Parser.this(input) match {
+  //          case Success(result, resto) => Success(Some(result), resto)
+  //          case Failure(m)             => Success(None, input)
+  //        }
+  //      }
+  //    }
+  //  }
+
+  //SOLO PARSERS DE STRING
+  def opt: Parser[String] = {
+    new Parser[String] {
       def apply(input: String) = {
         Parser.this(input) match {
-          case Success(result, resto) => Success(Some(result), resto)
-          case Failure(m)             => Success(None, input)
+          case Success(result: String, resto) => Success(result, resto)
+          case Failure(m)                     => Success("", input)
         }
       }
     }
