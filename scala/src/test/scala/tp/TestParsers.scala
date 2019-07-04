@@ -267,25 +267,25 @@ class ParserCombinators_Test {
     var resultadoParseo = concatCharString("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
-  
+
   @Test
   def parser_combinator_combined_char_string_success_char() = {
     var resultadoParseo = combinedCharString("a345")
     assertEquals(Success('a', "345"), resultadoParseo)
   }
-  
+
   @Test
   def parser_combinator_combined_char_string_success_string() = {
     var resultadoParseo = combinedCharString(" veces gano")
     assertEquals(Success(" veces", " gano"), resultadoParseo)
   }
-  
+
   @Test
   def parser_combinator_combined_char_string_failure_empty() = {
     var resultadoParseo = combinedCharString("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
-  
+
   @Test
   def parser_combinator_combinedCharVoid_char() = {
     var resultadoParseo = combinedCharVoid("a234")
@@ -303,7 +303,7 @@ class ParserCombinators_Test {
     var resultadoParseo = combinedCharVoid("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
-  
+
   @Test
   def parser_combinator_combinedStringVoid_void() = {
     var resultadoParseo = combinedStringVoid("1234")
@@ -323,18 +323,19 @@ class ParserCombinators_Test {
   }
 }
 
-class ParsersII_Satisfies_Tests {
+class ParsersII_Tests {
   val alphaNumCombined = digit <|> letter
-  val trueParser = string("true").const(true)
-  
   val alphaNumCombinedSatisfiesIsAOr9 = alphaNumCombined.satisfies((x: Char) => x == 'a' || x == 'A' || x == '9')
+  val trueParser = string("true").const(true)
+  val talVezIn = string("in").opt
+  val precedencia = talVezIn <> string("fija")
 
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_A() = {
     var resultadoParseo = alphaNumCombinedSatisfiesIsAOr9("a234")
     assertEquals(Success('a', "234"), resultadoParseo)
   }
-  
+
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_9() = {
     var resultadoParseo = alphaNumCombinedSatisfiesIsAOr9("9234")
@@ -346,28 +347,46 @@ class ParsersII_Satisfies_Tests {
     var resultadoParseo = alphaNumCombinedSatisfiesIsAOr9("1234")
     assertEquals(Failure("Doesn't satisfy the condition"), resultadoParseo)
   }
-  
+
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_failure_empty() = {
     var resultadoParseo = alphaNumCombinedSatisfiesIsAOr9("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
-  
+
   @Test
-  def parserII_satisfies_trueParser_success() = {
+  def parserII_const_trueParser_success() = {
     var resultadoParseo = trueParser("true")
     assertEquals(Success(true, ""), resultadoParseo)
   }
-  
+
   @Test
-  def parserII_satisfies_trueParser_failure_notTrue() = {
+  def parserII_const_trueParser_failure_notTrue() = {
     var resultadoParseo = trueParser("9234")
     assertEquals(Failure("Not the same string"), resultadoParseo)
   }
-  
+
   @Test
-  def parserII_satisfies_trueParser_failure_empty() = {
+  def parserII_const_trueParser_failure_empty() = {
     var resultadoParseo = trueParser("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_opt_precedencia_success_infija() = {
+    var resultadoParseo = precedencia("infija")
+    assertEquals(Success((Some("in"), "fija"), ""), resultadoParseo) //FEO
+  }
+
+  @Test
+  def parserII_opt_precedencia_success_fija() = {
+    var resultadoParseo = precedencia("fija")
+    assertEquals(Success((None, "fija"), ""), resultadoParseo)
+  }
+
+  @Test
+  def parserII_opt_precedencia_success_failure_empty() = {
+    var resultadoParseo = precedencia("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 }

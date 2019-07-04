@@ -82,18 +82,17 @@ trait Parser[+T] {
     }
   }
 
-  /*
-  def opt : Parser[T] = {
-    new Parser[T] {
+  //OPTION???...
+  def opt: Parser[Option[T]] = {
+    new Parser[Option[T]] {
       def apply(input: String) = {
         Parser.this(input) match {
-          case Success(result, resto) => Success(result, resto)
-          case Failure(m) => Success( ????????? , input)
+          case Success(result, resto) => Success(Some(result), resto)
+          case Failure(m)             => Success(None, input)
         }
+      }
     }
   }
-  *
-  */
 
   def const[U](valor: U): Parser[U] = {
     new Parser[U] {
