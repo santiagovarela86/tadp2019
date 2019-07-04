@@ -87,10 +87,10 @@ trait Parser[+T] {
     new Parser[Any] {
       def apply(input: String) = {
         Parser.this(input) match {
-          case Success(result: Any, resto) => Success(result, resto)
+          case Success(result, resto) => Success(result, resto)
           //case Success(result: Char, resto)   => Success(result, resto)
           //case Success(result: Unit, resto)   => Success(result, resto)
-          case _                           => Success((), input)
+          case _                      => Success((), input)
         }
       }
     }
@@ -102,6 +102,30 @@ trait Parser[+T] {
         Parser.this(input) match {
           case Success(result, resto) => Success(valor, resto)
           case Failure(m)             => Failure(m)
+        }
+      }
+    }
+  }
+
+//  //ANY?
+//  def * : Parser[List[Any]] = {
+//    new Parser[List[Any]] {
+//      def apply(input: String) = {
+//        Parser.this(input) match {
+//          case Success(result, resto) => Success(List(result, this(resto)), resto)
+//          case _                      => Success(List(()), input)
+//        }
+//      }
+//    }
+//  }
+  
+  //ANY?
+  def * : Parser[List[Any]] = {
+    new Parser[List[Any]] {
+      def apply(input: String) = {
+        Parser.this(input) match {
+          case Success(result, resto) => Success(List(result, this(resto)), resto)
+          case _                      => Success(List(()), input)
         }
       }
     }

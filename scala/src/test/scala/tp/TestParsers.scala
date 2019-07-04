@@ -24,12 +24,14 @@ class Parser_char_Test {
     assertEquals(Success('h', "ola"), resultadoParseo)
   }
 
+  /*
   @Test
   def char_test_failure_notAChar() = {
     var resultadoParseo = char(9)("9123") //ESTO NO DEBERIA PODER DEJARTE COMPILAR!!!... WHAT? EL 9 ES UN CHAR?
     assertEquals(Success(9, "123"), resultadoParseo)
     assertEquals(Success('9', "123"), resultadoParseo)
   }
+  */
 
   @Test
   def char_test_failure_wrongchar() = {
@@ -330,6 +332,8 @@ class ParsersII_Tests {
   val talVezIn = string("in").opt
   val precedencia = talVezIn <> string("fija")
   val talVezChar = char('a').opt
+  val charAKleene = char('a').*
+  val prueboKleenConConcat = (char('a') <> char('a') <> char('a') <> char('a') <> char('a'))
 
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_A() = {
@@ -394,7 +398,7 @@ class ParsersII_Tests {
   @Test
   def parserII_opt_talVezChar_success_infija_string() = {
     var resultadoParseo = talVezChar("a veces")
-    assertEquals(Success('a', " veces"), resultadoParseo) //FALLA
+    assertEquals(Success('a', " veces"), resultadoParseo)
   }
 
   @Test
@@ -408,5 +412,25 @@ class ParsersII_Tests {
     var resultadoParseo = talVezChar("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
     assertEquals(Success((), ""), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_charAKleene_success() = {
+    var resultadoParseo = charAKleene("aaaaa veces")
+    //var resultadoParseo = prueboKleenConConcat("aaaaa veces")
+    assertEquals(Success(List('a','a','a','a','a'), " veces"), resultadoParseo)
+  }
+  
+  @Test
+  def parserII_charAKleene_failure_notSameChar() = {
+    var resultadoParseo = charAKleene("bbba veces")
+    assertEquals(Success(List(()), "bbba veces"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_charAKleene_failure_empty() = {
+    var resultadoParseo = charAKleene("")
+    //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
+    assertEquals(Success(List(()), ""), resultadoParseo)
   }
 }
