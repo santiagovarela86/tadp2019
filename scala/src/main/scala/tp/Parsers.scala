@@ -20,30 +20,30 @@ trait Parser[T] {
   def apply(input: String): Result[T]
 
   def map[U](f: T => U): Parser[U] = new Parser[U] {
-    def apply(in: String) = Parser.this(in) map (f)
+    def apply(input: String) = Parser.this(input) map (f)
   }
 
   def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
-    def apply(in: String) = Parser.this(in) flatMap (f)
+    def apply(input: String) = Parser.this(input) flatMap (f)
   }
 
   def <|>[U >: T](p: => Parser[U]): Parser[U] = {
     new Parser[U] {
-      def apply(in: String) =
-        Parser.this(in) match {
-          case Success(x, n) => Success(x, n)
-          case Failure(_)    => p(in)
+      def apply(input: String) =
+        Parser.this(input) match {
+          case Success(result, resto) => Success(result, resto)
+          case Failure(_)             => p(input)
         }
     }
   }
 
   def <>[U](p: Parser[U]): Parser[Tuple2[T, U]] = {
     new Parser[Tuple2[T, U]] {
-      def apply(in: String) =
-        Parser.this(in) match {
-          case Success(x, resto) => p(resto) match {
-            case Success(x2, resto2) => Success((x, x2), resto2)
-            case Failure(m)          => Failure(m)
+      def apply(input: String) =
+        Parser.this(input) match {
+          case Success(result, resto) => p(resto) match {
+            case Success(result2, resto2) => Success((result, result2), resto2)
+            case Failure(m)               => Failure(m)
           }
           case Failure(m) => Failure(m)
         }
@@ -65,9 +65,21 @@ trait Parser[T] {
       a <- this;
       b <- p
     ) yield a
-    
+
     //otra forma
     //this.flatMap { (a: T) => p.map { (b: U) => { a } } }
+  }
+
+  def satisfies(condicion: T => Boolean): Parser[T] = {
+    new Parser[T] {
+      def apply(input: String) =
+        Parser.this(input) match {
+          case Success(result, resto) => {
+            if (condicion(result)) Success(result, resto) else Failure("Doesn't satisfy the condition")
+          }
+          case Failure(m) => Failure(m)
+        }
+    }
   }
 }
 
