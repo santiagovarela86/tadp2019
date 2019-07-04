@@ -15,7 +15,7 @@ case class Failure(msg: String) extends Result[Nothing] {
   def flatMap[U](f: Nothing => Parser[U]) = this
 }
 
-trait Parser[T] {
+trait Parser[+T] {
 
   def apply(input: String): Result[T]
 
@@ -27,7 +27,7 @@ trait Parser[T] {
     def apply(input: String) = Parser.this(input) flatMap (f)
   }
 
-  def <|>[U >: T](p: => Parser[U]): Parser[U] = {
+  def <|>[U >: T](p: Parser[U]): Parser[U] = {
     new Parser[U] {
       def apply(input: String) =
         Parser.this(input) match {
@@ -81,6 +81,31 @@ trait Parser[T] {
         }
     }
   }
+
+  /*
+  def opt : Parser[T] = {
+    new Parser[T] {
+      def apply(input: String) = {
+        Parser.this(input) match {
+          case Success(result, resto) => Success(result, resto)
+          case Failure(m) => Success( ????????? , input)
+        }
+    }
+  }
+  *
+  */
+
+  def const[U](valor: U): Parser[U] = {
+    new Parser[U] {
+      def apply(input: String) = {
+        Parser.this(input) match {
+          case Success(result, resto) => Success(valor, resto)
+          case Failure(m)             => Failure(m)
+        }
+      }
+    }
+  }
+
 }
 
 case object anyChar extends Parser[Char] {

@@ -162,6 +162,9 @@ class ParserCombinators_Test {
   val rightMost = letter ~> digit
   val leftMost = letter <~ digit
   val concatCharString = char('a') <> string(" veces")
+  val combinedCharString = char('a') <|> string(" veces")
+  val combinedCharVoid = char('a') <|> void
+  val combinedStringVoid = string("hola") <|> void
 
   @Test
   def parser_combinator_alphaNum_number() = {
@@ -262,6 +265,60 @@ class ParserCombinators_Test {
   @Test
   def parser_combinator_concat_char_string_failure_empty() = {
     var resultadoParseo = concatCharString("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+  
+  @Test
+  def parser_combinator_combined_char_string_success_char() = {
+    var resultadoParseo = combinedCharString("a345")
+    assertEquals(Success('a', "345"), resultadoParseo)
+  }
+  
+  @Test
+  def parser_combinator_combined_char_string_success_string() = {
+    var resultadoParseo = combinedCharString(" veces gano")
+    assertEquals(Success(" veces", " gano"), resultadoParseo)
+  }
+  
+  @Test
+  def parser_combinator_combined_char_string_failure_empty() = {
+    var resultadoParseo = combinedCharString("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+  
+  @Test
+  def parser_combinator_combinedCharVoid_char() = {
+    var resultadoParseo = combinedCharVoid("a234")
+    assertEquals(Success('a', "234"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_combinedCharVoid_void() = {
+    var resultadoParseo = combinedCharVoid("hola")
+    assertEquals(Success((), "ola"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_combinedCharVoid_empty() = {
+    var resultadoParseo = combinedCharVoid("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+  
+  @Test
+  def parser_combinator_combinedStringVoid_void() = {
+    var resultadoParseo = combinedStringVoid("1234")
+    assertEquals(Success((), "234"), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_combinedStringVoid_string() = {
+    var resultadoParseo = combinedStringVoid("hola")
+    assertEquals(Success("hola", ""), resultadoParseo)
+  }
+
+  @Test
+  def parser_combinator_combinedStringVoid_empty() = {
+    var resultadoParseo = combinedStringVoid("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 }
