@@ -329,6 +329,7 @@ class ParsersII_Tests {
   val trueParser = string("true").const(true)
   val talVezIn = string("in").opt
   val precedencia = talVezIn <> string("fija")
+  val talVezChar = char('a').opt
 
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_A() = {
@@ -372,40 +373,40 @@ class ParsersII_Tests {
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
 
-//  @Test
-//  def parserII_opt_precedencia_success_infija() = {
-//    var resultadoParseo = precedencia("infija")
-//    assertEquals(Success((Some("in"), "fija"), ""), resultadoParseo) //FEO
-//  }
-//
-//  @Test
-//  def parserII_opt_precedencia_success_fija() = {
-//    var resultadoParseo = precedencia("fija")
-//    assertEquals(Success((None, "fija"), ""), resultadoParseo)
-//  }
-//
-//  @Test
-//  def parserII_opt_precedencia_success_failure_empty() = {
-//    var resultadoParseo = precedencia("")
-//    assertEquals(Failure("Empty Input String"), resultadoParseo)
-//  }
-  
-  //SIN OPTION PERO SOLO CONTEMPLA PARSERS QUE SEAN DE STRING...
   @Test
-  def parserII_opt_precedencia_success_infija() = {
+  def parserII_opt_precedencia_success_infija_string() = {
     var resultadoParseo = precedencia("infija")
     assertEquals(Success(("in", "fija"), ""), resultadoParseo)
   }
 
   @Test
-  def parserII_opt_precedencia_success_fija() = {
+  def parserII_opt_precedencia_success_fija_string() = {
     var resultadoParseo = precedencia("fija")
-    assertEquals(Success(("", "fija"), ""), resultadoParseo)
+    assertEquals(Success(((), "fija"), ""), resultadoParseo)
   }
 
   @Test
-  def parserII_opt_precedencia_success_failure_empty() = {
+  def parserII_opt_precedencia_string_failure_empty() = {
     var resultadoParseo = precedencia("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_opt_talVezChar_success_infija_string() = {
+    var resultadoParseo = talVezChar("a veces")
+    assertEquals(Success('a', " veces"), resultadoParseo) //FALLA
+  }
+
+  @Test
+  def parserII_opt_talVezChar_success_fija_string() = {
+    var resultadoParseo = talVezChar("gano")
+    assertEquals(Success((), "gano"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_opt_talVezChar_string_success_empty() = {
+    var resultadoParseo = talVezChar("")
+    //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
+    assertEquals(Success((), ""), resultadoParseo)
   }
 }

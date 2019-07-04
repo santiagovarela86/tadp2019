@@ -5,7 +5,7 @@ abstract class Result[+T] {
   def flatMap[U](f: T => Parser[U]): Result[U]
 }
 
-case class Success[T](result: T, resto: String) extends Result[T] {
+case class Success[+T](result: T, resto: String) extends Result[T] {
   def map[U](f: T => U) = Success(f(result), resto)
   def flatMap[U](f: T => Parser[U]) = f(result)(resto)
 }
@@ -82,32 +82,22 @@ trait Parser[+T] {
     }
   }
 
-  //  //OPTION???...
-  //  def opt: Parser[Option[T]] = {
-  //    new Parser[Option[T]] {
-  //      def apply(input: String) = {
-  //        Parser.this(input) match {
-  //          case Success(result, resto) => Success(Some(result), resto)
-  //          case Failure(m)             => Success(None, input)
-  //        }
-  //      }
-  //    }
-  //  }
-
-  //SOLO PARSERS DE STRING
-  def opt: Parser[String] = {
-    new Parser[String] {
+  //ANY?
+  def opt: Parser[Any] = {
+    new Parser[Any] {
       def apply(input: String) = {
         Parser.this(input) match {
-          case Success(result: String, resto) => Success(result, resto)
-          case Failure(m)                     => Success("", input)
+          case Success(result: Any, resto) => Success(result, resto)
+          //case Success(result: Char, resto)   => Success(result, resto)
+          //case Success(result: Unit, resto)   => Success(result, resto)
+          case _                           => Success((), input)
         }
       }
     }
   }
 
-  def const[U](valor: U): Parser[U] = {
-    new Parser[U] {
+  def const[T](valor: T): Parser[T] = {
+    new Parser[T] {
       def apply(input: String) = {
         Parser.this(input) match {
           case Success(result, resto) => Success(valor, resto)
