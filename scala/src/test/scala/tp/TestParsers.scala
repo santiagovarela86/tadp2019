@@ -424,14 +424,14 @@ class ParsersII_Tests {
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
     assertEquals(Success((), ""), resultadoParseo)
   }
-  
+
   @Test
   def parserII_charAKleene_success() = {
     var resultadoParseo = charAKleene("aaaaa veces")
     //var resultadoParseo = prueboKleenConConcat("aaaaa veces")
-    assertEquals(Success(List('a','a','a','a','a'), " veces"), resultadoParseo)
+    assertEquals(Success(List('a', 'a', 'a', 'a', 'a'), " veces"), resultadoParseo)
   }
-  
+
   @Test
   def parserII_charAKleene_failure_notSameChar() = {
     var resultadoParseo = charAKleene("bbba veces")
@@ -444,7 +444,7 @@ class ParsersII_Tests {
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
     assertEquals(Success(List(()), ""), resultadoParseo)
   }
-  
+
   @Test
   def parserII_map_mapCharADigit_success_1() = {
     var resultadoParseo = mapCharADigit("1234")
@@ -455,7 +455,7 @@ class ParsersII_Tests {
     var resultadoParseo = mapCharADigit("a234")
     assertEquals(Failure("Not a digit"), resultadoParseo)
   }
-  
+
   @Test
   def parserII_map_mapCharADigit_failure_empty() = {
     var resultadoParseo = mapCharADigit("")

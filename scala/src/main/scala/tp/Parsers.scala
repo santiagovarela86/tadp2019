@@ -107,25 +107,54 @@ trait Parser[+T] {
     }
   }
 
-//  //ANY?
-//  def * : Parser[List[Any]] = {
-//    new Parser[List[Any]] {
-//      def apply(input: String) = {
-//        Parser.this(input) match {
-//          case Success(result, resto) => Success(List(result, this(resto)), resto)
-//          case _                      => Success(List(()), input)
-//        }
-//      }
-//    }
-//  }
-  
+  //  //ANY?
+  //  def * : Parser[List[Any]] = {
+  //    new Parser[List[Any]] {
+  //      def apply(input: String) = {
+  //        Parser.this(input) match {
+  //          case Success(result, resto) => Success(List(result, this(resto)), resto)
+  //          case _                      => Success(List(()), input)
+  //        }
+  //      }
+  //    }
+  //  }
+
+  //  //ANY?
+  //  def * [T]: Parser[Any] = {
+  //    new Parser[Any] {
+  //      def apply(input: String) = {
+  //        Parser.this(input) match {
+  //          case Success(result, resto) => {
+  //            apply(resto) match {
+  //              case Success(result2, resto2) => Success(List(result, result2), resto2).map(
+  //                    (result: List[Any]) => result match {
+  //                        case List(x,List(xs)) => List(x,xs)
+  //                        case List(x, List(())) => List(x)
+  //                      }
+  //                  )
+  //              case _                        => Success(List(()), input)
+  //            }
+  //            //Success(result :: "a", resto)
+  //          }
+  //          case _ => Success(List(()), input)
+  //        }
+  //      }
+  //    }
+  //  }
+
   //ANY?
-  def * : Parser[List[Any]] = {
+  def *[T]: Parser[List[Any]] = {
     new Parser[List[Any]] {
       def apply(input: String) = {
         Parser.this(input) match {
-          case Success(result, resto) => Success(List(result, this(resto)), resto)
-          case _                      => Success(List(()), input)
+          case Success(result, resto) => {
+            apply(resto) match {
+              case Success(result2, resto2) => Success(List(result, result2), resto2)
+              //case _                        => Success(List(()), input)
+            }
+            //Success(result :: "a", resto)
+          }
+          case _ => Success(List(()), input)
         }
       }
     }
