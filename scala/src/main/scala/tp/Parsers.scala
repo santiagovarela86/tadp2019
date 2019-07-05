@@ -121,15 +121,17 @@ trait Parser[+T] {
 
   //ANY?
   def + : Parser[Any] = {
+    var huboAlMenosUnSuccess: Boolean = false
     new Parser[Any] {
       def apply(input: String) = {
         Parser.this(input) match {
           case Success(result, resto) => {
+            huboAlMenosUnSuccess = true
             apply(resto) match {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
             }
           }
-          case Failure(m) => Failure(m)
+          case Failure(m) => if (huboAlMenosUnSuccess) Success(List(()), input) else Failure(m)
         }
       }
     }
