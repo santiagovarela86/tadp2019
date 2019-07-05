@@ -2,16 +2,19 @@ package tp
 
 abstract class Result[+T] {
   def map[U](f: T => U): Result[U]
+
   def flatMap[U](f: T => Parser[U]): Result[U]
 }
 
 case class Success[+T](result: T, resto: String) extends Result[T] {
   def map[U](f: T => U) = Success(f(result), resto)
+
   def flatMap[U](f: T => Parser[U]) = f(result)(resto)
 }
 
 case class Failure(msg: String) extends Result[Nothing] {
   def map[U](f: Nothing => U) = this
+
   def flatMap[U](f: Nothing => Parser[U]) = this
 }
 
@@ -52,7 +55,7 @@ trait Parser[+T] {
 
   def ~>[U](p: Parser[U]): Parser[U] = {
     for (
-      a <- this;
+      _ <- this;
       b <- p
     ) yield b
 
@@ -62,7 +65,7 @@ trait Parser[+T] {
   def <~[U](p: Parser[U]): Parser[T] = {
     for (
       a <- this;
-      b <- p
+      _ <- p
     ) yield a
 
     //this.flatMap { (a: T) => p.map { (b: U) => { a } } }
@@ -94,7 +97,7 @@ trait Parser[+T] {
     new Parser[T] {
       def apply(input: String) = {
         Parser.this (input) match {
-          case Success(result, resto) => Success(valor, resto)
+          case Success(_, resto) => Success(valor, resto)
           case Failure(m) => Failure(m)
         }
       }
@@ -111,7 +114,7 @@ trait Parser[+T] {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
             }
           }
-          case Failure(m) => Success(List(()), input)
+          case Failure(_) => Success(List(()), input)
         }
       }
     }
@@ -135,19 +138,20 @@ trait Parser[+T] {
     }
   }
 
-  def sepBy(otherParser: Parser[Any]) : Parser[Any] = {
+  def sepBy(otherParser: Parser[Any]): Parser[Any] = {
     var huboAlMenosUnSuccess: Boolean = false
     new Parser[Any] {
-      def apply(input: String) = {
+      def apply(input: String): Result[List[Any]] = {
         Parser.this (input) match {
           case Success(result, resto) => {
             huboAlMenosUnSuccess = true
             apply(resto) match {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+              case Failure(_) => Failure("Unexpected char")
             }
           }
-          case Failure(m) => otherParser(input) match {
-            case Success(resultOtherParser, resto3) => apply(resto3)
+          case Failure(_) => otherParser(input) match {
+            case Success(_, resto3) => apply(resto3)
             case Failure("Empty Input String") => if (huboAlMenosUnSuccess) Success(List(()), input) else Failure("Empty Input String")
             case Failure(m) => Failure(m)
           }
@@ -159,7 +163,7 @@ trait Parser[+T] {
   //ANY?
   //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
   private def flatten(ls: List[Any]): List[Any] = ls flatMap {
-    case Failure(m) => List()
+    case Failure(_) => List()
     case () => List()
     case i: List[_] => flatten(i)
     case e => List(e)
@@ -211,3 +215,4 @@ case object string {
     }
   }
 }
+
