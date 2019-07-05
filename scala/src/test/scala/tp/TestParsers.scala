@@ -501,3 +501,44 @@ class ParsersII_Tests {
     assertEquals(Failure("Empty Input String"), phoneNumber(""))
   }
 }
+
+class Musiquita_test {
+
+  val nota = letter.satisfies((caracter: Char) => List('A', 'B', 'C', 'D', 'E', 'F', 'G').contains(caracter))
+  val tono = digit <> nota
+  val digito = digit.+.satisfies((a: Any) => {
+      List('1') == a ||
+      List('2') == a ||
+      List('4') == a ||
+      List('8') == a ||
+      List('1', '6') == a
+  })
+  val figura = char('1') <> char('/') <> digito
+  val silencio = char('_') <|> char('-') <|> char('~')
+
+  @Test
+  def parserNota() = {
+    assertEquals(Success('A', ""), nota("A"))
+  }
+
+  @Test
+  def parserTono() = {
+    assertEquals(Success(('5', 'E'), ""), tono("5E"))
+  }
+
+  @Test
+  def parserDigito() = {
+    assertEquals(Success(List('1', '6'), ""), digito("16"))
+  }
+
+  @Test
+  def parserFigura() = {
+    assertEquals(Success((('1', '/'), List('1', '6')), ""), figura("1/16"))
+  }
+
+  @Test
+  def parserSilencio() = {
+    assertEquals(Success('-', ""), silencio("-"))
+  }
+
+}
