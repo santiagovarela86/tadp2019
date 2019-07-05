@@ -345,6 +345,7 @@ class ParsersII_Tests {
     case '8' => 8
     case '9' => 9
   })
+  val phoneNumber = digit.sepBy(char('-'))
 
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_A() = {
@@ -443,7 +444,7 @@ class ParsersII_Tests {
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING, PUEDE APLICARSE 0 VECES
     assertEquals(Success(List(()), ""), resultadoParseo)
   }
-  
+
   @Test
   def parserII_charAOperadorMas_success() = {
     var resultadoParseo = charAOperadorMas("aaaaa veces") //FALLA CON NOT THE SAME CHAR... VER COMO SALVAR EL ULTIMO
@@ -477,5 +478,10 @@ class ParsersII_Tests {
   def parserII_map_mapCharADigit_failure_empty() = {
     var resultadoParseo = mapCharADigit("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_success() = {
+    assertEquals(Success(List('1', '2', '3', '4', '5', '6', '7', '8'), ""), phoneNumber("1234-5678"))
   }
 }

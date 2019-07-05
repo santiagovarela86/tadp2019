@@ -145,6 +145,28 @@ trait Parser[+T] {
     case i: List[_] => flatten(i)
     case e          => List(e)
   }
+
+  def sepBy(otherParser: Parser[Any]): Parser[Any] = {
+    var huboAlMenosUnSuccess: Boolean = false
+    new Parser[Any] {
+      def apply(input: String) = {
+        Parser.this(input) match {
+          case Success(result, resto) => {
+            huboAlMenosUnSuccess = true
+            apply(resto) match {
+              case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+            }
+          }
+          case Failure(m) => otherParser(input) match {
+            case Success(resultOtherParser, resto3) => apply(resto3)
+            case Failure("Empty Input String")      => if (huboAlMenosUnSuccess) Success(List(()), input) else Failure("Empty Input String")
+            case Failure(m)                         => Failure(m)
+          }
+        }
+      }
+    }
+  }
+
 }
 
 case object anyChar extends Parser[Char] {
@@ -170,7 +192,6 @@ case object alphaNum extends Parser[Char] {
     Failure("Not an alphanum")
 }
 
-//ESTA BIEN QUE NO EXTIENDA A PARSER[CHAR]???
 case object char {
   def apply(inputChar: Char): Parser[Char] = {
     new Parser[Char] {
@@ -181,7 +202,6 @@ case object char {
   }
 }
 
-//ESTA BIEN QUE NO EXTIENDA A PARSER[STRING]???
 case object string {
   def apply(inputSubString: String): Parser[String] = {
     new Parser[String] {
