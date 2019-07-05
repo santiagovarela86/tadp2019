@@ -155,6 +155,7 @@ trait Parser[+T] {
             huboAlMenosUnSuccess = true
             apply(resto) match {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+              case Failure(_)               => Failure("Unexpected char")
             }
           }
           case Failure(m) => otherParser(input) match {

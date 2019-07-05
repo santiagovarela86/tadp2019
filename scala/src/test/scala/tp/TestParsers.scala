@@ -484,4 +484,19 @@ class ParsersII_Tests {
   def parserII_sepBy_phoneNumber_success() = {
     assertEquals(Success(List('1', '2', '3', '4', '5', '6', '7', '8'), ""), phoneNumber("1234-5678"))
   }
+  
+    @Test
+  def parserII_sepBy_phoneNumber_failure() = {
+    assertEquals(Failure("Unexpected char"), phoneNumber("1234 5678"))
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_failure_notSameChar() = {
+    assertEquals(Failure("Not the same char"), phoneNumber("saraza"))
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_failure_empty() = {
+    assertEquals(Failure("Empty Input String"), phoneNumber(""))
+  }
 }
