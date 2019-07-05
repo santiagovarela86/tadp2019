@@ -8,7 +8,9 @@ scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.5" % "test",
-  "org.scalactic" %% "scalactic" % "3.0.5"
+  "org.scalactic" %% "scalactic" % "3.0.5",
+  "junit" % "junit" % "4.11" % Test,
+  "com.novocode" % "junit-interface" % "0.11" % Test
 )
 
 EclipseKeys.withSource := true

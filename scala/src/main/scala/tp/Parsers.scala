@@ -135,6 +135,27 @@ trait Parser[+T] {
     }
   }
 
+  def sepBy(otherParser: Parser[Any]) : Parser[Any] = {
+    var huboAlMenosUnSuccess: Boolean = false
+    new Parser[Any] {
+      def apply(input: String) = {
+        Parser.this (input) match {
+          case Success(result, resto) => {
+            huboAlMenosUnSuccess = true
+            apply(resto) match {
+              case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+            }
+          }
+          case Failure(m) => otherParser(input) match {
+            case Success(resultOtherParser, resto3) => apply(resto3)
+            case Failure("Empty Input String") => if (huboAlMenosUnSuccess) Success(List(()), input) else Failure("Empty Input String")
+            case Failure(m) => Failure(m)
+          }
+        }
+      }
+    }
+  }
+
   //ANY?
   //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
   private def flatten(ls: List[Any]): List[Any] = ls flatMap {
