@@ -20,30 +20,30 @@ trait Parser[+T] {
   def apply(input: String): Result[T]
 
   def map[U](f: T => U): Parser[U] = new Parser[U] {
-    def apply(input: String) = Parser.this(input) map (f)
+    def apply(input: String) = Parser.this (input) map (f)
   }
 
   def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
-    def apply(input: String) = Parser.this(input) flatMap (f)
+    def apply(input: String) = Parser.this (input) flatMap (f)
   }
 
   def <|>[U >: T](p: Parser[U]): Parser[U] = {
     new Parser[U] {
       def apply(input: String) =
-        Parser.this(input) match {
+        Parser.this (input) match {
           case Success(result, resto) => Success(result, resto)
-          case Failure(_)             => p(input)
+          case Failure(_) => p(input)
         }
     }
   }
 
-  def <>[U](p: Parser[U]): Parser[Tuple2[T, U]] = {
-    new Parser[Tuple2[T, U]] {
+  def <>[U](p: Parser[U]): Parser[(T, U)] = {
+    new Parser[(T, U)] {
       def apply(input: String) =
-        Parser.this(input) match {
+        Parser.this (input) match {
           case Success(result, resto) => p(resto) match {
             case Success(result2, resto2) => Success((result, result2), resto2)
-            case Failure(m)               => Failure(m)
+            case Failure(m) => Failure(m)
           }
           case Failure(m) => Failure(m)
         }
@@ -71,10 +71,8 @@ trait Parser[+T] {
   def satisfies(condicion: T => Boolean): Parser[T] = {
     new Parser[T] {
       def apply(input: String) =
-        Parser.this(input) match {
-          case Success(result, resto) => {
-            if (condicion(result)) Success(result, resto) else Failure("Doesn't satisfy the condition")
-          }
+        Parser.this (input) match {
+          case Success(result, resto) => if (condicion(result)) Success(result, resto) else Failure("Doesn't satisfy the condition")
           case Failure(m) => Failure(m)
         }
     }
@@ -84,9 +82,9 @@ trait Parser[+T] {
   def opt: Parser[Any] = {
     new Parser[Any] {
       def apply(input: String) = {
-        Parser.this(input) match {
+        Parser.this (input) match {
           case Success(result, resto) => Success(result, resto)
-          case _                      => Success((), input)
+          case _ => Success((), input)
         }
       }
     }
@@ -95,9 +93,9 @@ trait Parser[+T] {
   def const[T](valor: T): Parser[T] = {
     new Parser[T] {
       def apply(input: String) = {
-        Parser.this(input) match {
+        Parser.this (input) match {
           case Success(result, resto) => Success(valor, resto)
-          case Failure(m)             => Failure(m)
+          case Failure(m) => Failure(m)
         }
       }
     }
@@ -107,7 +105,7 @@ trait Parser[+T] {
   def * : Parser[Any] = {
     new Parser[Any] {
       def apply(input: String) = {
-        Parser.this(input) match {
+        Parser.this (input) match {
           case Success(result, resto) => {
             apply(resto) match {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
@@ -131,7 +129,7 @@ trait Parser[+T] {
               case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
             }
           }
-          case Failure(m) => if(huboAlMenosUnSuccess) Success(List(()), input) else Failure(m)
+          case Failure(m) => if (huboAlMenosUnSuccess) Success(List(()), input) else Failure(m)
         }
       }
     }
@@ -141,9 +139,9 @@ trait Parser[+T] {
   //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
   private def flatten(ls: List[Any]): List[Any] = ls flatMap {
     case Failure(m) => List()
-    case ()         => List()
+    case () => List()
     case i: List[_] => flatten(i)
-    case e          => List(e)
+    case e => List(e)
   }
 }
 
