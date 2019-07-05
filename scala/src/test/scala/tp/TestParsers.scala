@@ -446,7 +446,7 @@ class ParsersII_Tests {
   
   @Test
   def parserII_charAOperadorMas_success() = {
-    var resultadoParseo = charAOperadorMas("aaaaa veces")
+    var resultadoParseo = charAOperadorMas("aaaaa veces") //FALLA CON NOT THE SAME CHAR... VER COMO SALVAR EL ULTIMO
     assertEquals(Success(List('a', 'a', 'a', 'a', 'a'), " veces"), resultadoParseo)
   }
 

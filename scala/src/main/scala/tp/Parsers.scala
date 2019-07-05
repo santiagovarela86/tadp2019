@@ -135,10 +135,12 @@ trait Parser[+T] {
     }
   }
 
+  //ANY?
   //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
   private def flatten(ls: List[Any]): List[Any] = ls flatMap {
-    case i: List[_] => flatten(i)
+    case Failure(m) => List()
     case ()         => List()
+    case i: List[_] => flatten(i)
     case e          => List(e)
   }
 }
