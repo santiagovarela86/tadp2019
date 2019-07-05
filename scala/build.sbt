@@ -11,5 +11,8 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % "3.0.5"
 )
 
+libraryDependencies += "com.novocode" % "junit-interface" % "0.8" % "test->default"
+
+
 EclipseKeys.withSource := true
 EclipseKeys.withJavadoc := true
