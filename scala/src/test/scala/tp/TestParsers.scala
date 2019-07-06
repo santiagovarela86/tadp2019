@@ -582,4 +582,10 @@ class ParsersIII_Tests {
     val resultadorParseo = acordeExplicito("6A+6C#+6G1/8")
     assertEquals(Success(Acorde(List(Tono(6, A), Tono(6, Cs), Tono(6, G)), Corchea), ""), resultadorParseo)
   }
+
+  @Test
+  def acordeMayorSuccess(): Unit = {
+    val resultadoParseo = acordeMayor("6AM1/2")
+    assertEquals(Success(Acorde(List(Tono(6, A), Tono(6, Cs), Tono(6, E)), Blanca), ""), resultadoParseo)
+  }
 }
