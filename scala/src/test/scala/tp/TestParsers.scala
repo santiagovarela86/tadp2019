@@ -1,5 +1,6 @@
 package tp
 
+import Musica.{A, Blanca, Corchea, Silencio}
 import org.junit.Assert._
 import org.junit.Test
 
@@ -504,4 +505,45 @@ class ParsersII_Tests {
     val resultadoParseo = phoneNumber("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
+}
+
+class ParsersIII_Tests {
+
+  @Test
+  def silencioBlancaParser() = {
+    val resultadoParseo = silencio("_A")
+    assertEquals(Success(Silencio(Blanca), "A"), resultadoParseo)
+  }
+
+  @Test
+  def silencioCorcheaParser(): Unit = {
+    val resultadoParseo = silencio("~A")
+    assertEquals(Success(Silencio(Corchea), "A"), resultadoParseo)
+  }
+
+  @Test
+  def notaParserSuccess(): Unit = {
+    val resultadoParseo = nota("ABCD")
+    assertEquals(Success(A, "BCD"), resultadoParseo)
+  }
+
+
+  @Test
+  def notaParserFailure(): Unit = {
+    val resultadoParseo = nota("XABCD")
+    assertEquals(Failure("Doesn't satisfy the condition"), resultadoParseo) //Estaria copado que sea otro error
+  }
+
+  @Test
+  def figuraParserCorchea(): Unit = {
+    val resultadoParseo = figura("1/8A")
+    assertEquals(Success(Corchea, "A"), resultadoParseo)
+  }
+
+  @Test
+  def figuraParserFailure(): Unit = {
+    val resultadoParseo = figura("1/7B")
+    assertEquals(Failure("Not the same string"), resultadoParseo) //Estaria copado que sea otro error
+  }
+
 }

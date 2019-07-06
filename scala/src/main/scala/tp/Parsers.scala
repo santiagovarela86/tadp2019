@@ -1,5 +1,7 @@
 package tp
 
+import Musica._
+
 abstract class Result[+T] {
   def map[U](f: T => U): Result[U]
 
@@ -186,3 +188,29 @@ case object string {
     }
   }
 }
+
+
+/*
+case object melodia extends Parser[Melodia] {
+
+  sepBy(char(' '))
+
+  def apply(input: String): Result[Melodia] = super.apply(input)
+}
+*/
+
+case object silencio extends Parser[Tocable] {
+  def apply(inputString: String): Result[Tocable] = (char('_').const(Blanca) <|> char('-').const(Negra) <|> char('~').const(Corchea)).map(figura => Silencio(figura))(inputString)
+}
+
+case object nota extends Parser[Nota] {
+  def apply(inputString: String) = anyChar.satisfies(char => Nota.notas.map(_.toString).contains(char.toString)).map(c => Nota.notas.find(_.toString == c.toString).get)(inputString)
+}
+
+case object figura extends Parser[Figura] {
+  val denominadorParser = char('1').const(Redonda) <|> char('2').const(Blanca) <|> char('4').const(Negra) <|> char('8').const(Corchea) <|> string("16").const(SemiCorchea)
+
+  override def apply(input: String) = ((char('1') ~> char('/')) ~> denominadorParser) (input)
+}
+
+
