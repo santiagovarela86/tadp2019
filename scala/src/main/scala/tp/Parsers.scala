@@ -83,12 +83,12 @@ trait Parser[+T] {
   }
 
   //ANY?
-  def opt: Parser[Any] = {
-    new Parser[Any] {
+  def opt: Parser[Option[T]] = {
+    new Parser[Option[T]] {
       def apply(input: String) = {
         Parser.this (input) match {
-          case Success(result, resto) => Success(result, resto)
-          case _ => Success((), input)
+          case Success(result, resto) => Success(Option(result), resto)
+          case _ => Success(Option.empty, input)
         }
       }
     }

@@ -391,13 +391,13 @@ class ParsersII_Tests {
   @Test
   def parserII_opt_precedencia_success_infija_string() = {
     var resultadoParseo = precedencia("infija")
-    assertEquals(Success(("in", "fija"), ""), resultadoParseo)
+    assertEquals(Success((Some("in"), "fija"), ""), resultadoParseo)
   }
 
   @Test
   def parserII_opt_precedencia_success_fija_string() = {
     var resultadoParseo = precedencia("fija")
-    assertEquals(Success(((), "fija"), ""), resultadoParseo)
+    assertEquals(Success((None, "fija"), ""), resultadoParseo)
   }
 
   @Test
@@ -409,20 +409,20 @@ class ParsersII_Tests {
   @Test
   def parserII_opt_talVezChar_success_infija_string() = {
     var resultadoParseo = talVezChar("a veces")
-    assertEquals(Success('a', " veces"), resultadoParseo)
+    assertEquals(Success(Some('a'), " veces"), resultadoParseo)
   }
 
   @Test
   def parserII_opt_talVezChar_success_fija_string() = {
     var resultadoParseo = talVezChar("gano")
-    assertEquals(Success((), "gano"), resultadoParseo)
+    assertEquals(Success(None, "gano"), resultadoParseo)
   }
 
   @Test
   def parserII_opt_talVezChar_string_success_empty() = {
     var resultadoParseo = talVezChar("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
-    assertEquals(Success((), ""), resultadoParseo)
+    assertEquals(Success(None, ""), resultadoParseo)
   }
 
   @Test
