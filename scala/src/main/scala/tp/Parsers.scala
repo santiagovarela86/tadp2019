@@ -242,3 +242,7 @@ case object acordeMayor extends Parser[Acorde] {
   def apply(input: String) = (tono <~ char('M') <> figura).map(result => result._1.nota.acordeMayor(result._1.octava, result._2))(input)
 }
 
+case object melodia extends Parser[Melodia] {
+  def apply(input: String) = (silencio <|> acorde <|> sonido).sepBy(char(' '))(input)
+}
+
