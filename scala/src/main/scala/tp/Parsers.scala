@@ -60,7 +60,7 @@ trait Parser[+T] {
 
   def ~>[U](p: Parser[U]): Parser[U] = {
     for (
-      a <- this;
+      _ <- this;
       b <- p
     ) yield b
 
@@ -70,7 +70,7 @@ trait Parser[+T] {
   def <~[U](p: Parser[U]): Parser[T] = {
     for (
       a <- this;
-      b <- p
+      _ <- p
     ) yield a
 
     //this.flatMap { (a: T) => p.map { (b: U) => { a } } }
@@ -82,7 +82,6 @@ trait Parser[+T] {
     }
   }
 
-  //ANY?
   def opt: Parser[Option[T]] = {
     new Parser[Option[T]] {
       def apply(input: String) = {
@@ -98,14 +97,13 @@ trait Parser[+T] {
     new Parser[T] {
       def apply(input: String) = {
         Parser.this (input) match {
-          case Success(result, resto) => Success(valor, resto)
+          case Success(_, resto) => Success(valor, resto)
           case Failure(m) => Failure(m)
         }
       }
     }
   }
 
-  //ANY?
   def * : Parser[List[T]] = {
     new Parser[List[T]] {
       def apply(input: String) = {
@@ -120,29 +118,13 @@ trait Parser[+T] {
   }
 
   def + : Parser[List[T]] = {
-    var huboAlMenosUnSuccess: Boolean = false
+    def insideParser = Parser.this <> *
     new Parser[List[T]] {
-      def apply(input: String) = {
-        Parser.this (input) match {
-          case Success(result: T, resto) => {
-            huboAlMenosUnSuccess = true
-            apply(resto) match {
-              case Success(result2: List[T], resto2) => Success(result :: result2, resto2)
-            }
-          }
-          case Failure(m) => if (huboAlMenosUnSuccess) Success(List(), input) else Failure(m)
-        }
+      def apply(input: String): Result[List[T]] = insideParser.apply(input) match {
+        case Success((first, second), resto) => Success(first :: second, resto)
+        case failure: Failure => failure
       }
     }
-  }
-
-  //ANY?
-  //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
-  private def flatten(ls: List[Any]): List[Any] = ls flatMap {
-    case Failure(_) => List()
-    case () => List()
-    case i: List[_] => flatten(i)
-    case e => List(e)
   }
 }
 
