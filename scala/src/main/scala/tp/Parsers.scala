@@ -168,7 +168,6 @@ case object alphaNum extends Parser[Char] {
     Failure("Not an alphanum")
 }
 
-//ESTA BIEN QUE NO EXTIENDA A PARSER[CHAR]???
 case object char {
   def apply(inputChar: Char): Parser[Char] = {
     new Parser[Char] {
@@ -179,7 +178,6 @@ case object char {
   }
 }
 
-//ESTA BIEN QUE NO EXTIENDA A PARSER[STRING]???
 case object string {
   def apply(inputSubString: String): Parser[String] = new Parser[String] {
     def apply(inputString: String) = {
@@ -188,16 +186,6 @@ case object string {
     }
   }
 }
-
-
-/*
-case object melodia extends Parser[Melodia] {
-
-  sepBy(char(' '))
-
-  def apply(input: String): Result[Melodia] = super.apply(input)
-}
-*/
 
 case object silencio extends Parser[Tocable] {
   def apply(inputString: String): Result[Tocable] = (char('_').const(Blanca) <|> char('-').const(Negra) <|> char('~').const(Corchea)).map(figura => Silencio(figura))(inputString)
@@ -227,7 +215,7 @@ case object sonido extends Parser[Sonido] {
 
 
 case object acorde extends Parser[Acorde] {
-  def apply(input: String) = (acordeExplicito <|> acordeMayor <|> acordeMayor) (input)
+  def apply(input: String) = (acordeExplicito <|> acordeMenor <|> acordeMayor) (input)
 }
 
 case object acordeExplicito extends Parser[Acorde] {
