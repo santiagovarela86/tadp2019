@@ -225,4 +225,7 @@ case object sonido extends Parser[Sonido] {
   def apply(input: String) = (tono <> figura).map(result => Sonido(result._1, result._2))(input)
 }
 
+case object acordeExplicito extends Parser[Acorde] {
+  def apply(input: String) = (tono.sepBy(char('+')) <> figura).map(result => Acorde(result._1, result._2))(input)
+}
 
