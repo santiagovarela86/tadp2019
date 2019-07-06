@@ -571,4 +571,10 @@ class ParsersIII_Tests {
     assertEquals(Failure("Doesn't satisfy the condition"), resultadoParseo)
   }
 
+  @Test
+  def sonidoParser6AsNegra(): Unit = {
+    val resultadoParseo = sonido("6A#1/4")
+    assertEquals(Success(Sonido(Tono(6, As), Negra), ""), resultadoParseo)
+  }
+
 }
