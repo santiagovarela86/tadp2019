@@ -210,7 +210,11 @@ case object nota extends Parser[Nota] {
 case object figura extends Parser[Figura] {
   val denominadorParser = char('1').const(Redonda) <|> char('2').const(Blanca) <|> char('4').const(Negra) <|> char('8').const(Corchea) <|> string("16").const(SemiCorchea)
 
-  override def apply(input: String) = ((char('1') ~> char('/')) ~> denominadorParser) (input)
+  def apply(input: String) = ((char('1') ~> char('/')) ~> denominadorParser) (input)
+}
+
+case object tono extends Parser[Tono] {
+  def apply(input: String): Result[Tono] = (digit.*.map(_.mkString.toInt) <> nota).map(result => Tono(result._1, result._2))(input)
 }
 
 
