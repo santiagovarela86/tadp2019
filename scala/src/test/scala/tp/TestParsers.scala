@@ -1,6 +1,6 @@
 package tp
 
-import Musica.{A, Blanca, Corchea, D, Silencio, Tono}
+import Musica._
 import org.junit.Assert._
 import org.junit.Test
 
@@ -522,11 +522,16 @@ class ParsersIII_Tests {
   }
 
   @Test
-  def notaParserSuccess(): Unit = {
+  def notaParserSuccessA(): Unit = {
     val resultadoParseo = nota("ABCD")
     assertEquals(Success(A, "BCD"), resultadoParseo)
   }
 
+  @Test
+  def notaParserSuccesAs: Unit = {
+    val resultadoParseo = nota("A#B")
+    assertEquals(Success(As, "B"), resultadoParseo)
+  }
 
   @Test
   def notaParserFailure(): Unit = {
@@ -555,17 +560,15 @@ class ParsersIII_Tests {
 
   @Test
   def tonoParser1024D(): Unit = {
-    val resultadoParseo = tono("1024D#")
-    assertEquals(Success(Tono(1024, D), "#"), resultadoParseo
+    val resultadoParseo = tono("1024D#J")
+    assertEquals(Success(Tono(1024, Ds), "J"), resultadoParseo
     )
   }
-
 
   @Test
   def tonoParserFailure(): Unit = {
     val resultadoParseo = tono("6,5A")
     assertEquals(Failure("Doesn't satisfy the condition"), resultadoParseo)
   }
-
 
 }

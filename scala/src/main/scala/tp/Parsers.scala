@@ -203,8 +203,12 @@ case object silencio extends Parser[Tocable] {
   def apply(inputString: String): Result[Tocable] = (char('_').const(Blanca) <|> char('-').const(Negra) <|> char('~').const(Corchea)).map(figura => Silencio(figura))(inputString)
 }
 
-case object nota extends Parser[Nota] {
+case object basicNota extends Parser[Nota] {
   def apply(inputString: String) = anyChar.satisfies(char => Nota.notas.map(_.toString).contains(char.toString)).map(c => Nota.notas.find(_.toString == c.toString).get)(inputString)
+}
+
+case object nota extends Parser[Nota] {
+  def apply(inputString: String) = ((basicNota <~ char('#')).map(Nota.sostenido) <|> (basicNota <~ char('b')).map(Nota.bemol) <|> basicNota) (inputString)
 }
 
 case object figura extends Parser[Figura] {
@@ -214,7 +218,11 @@ case object figura extends Parser[Figura] {
 }
 
 case object tono extends Parser[Tono] {
-  def apply(input: String): Result[Tono] = (digit.*.map(_.mkString.toInt) <> nota).map(result => Tono(result._1, result._2))(input)
+  def apply(input: String) = (digit.*.map(_.mkString.toInt) <> nota).map(result => Tono(result._1, result._2))(input)
+}
+
+case object sonido extends Parser[Sonido] {
+  def apply(input: String) = (tono <> figura).map(result => Sonido(result._1, result._2))(input)
 }
 
 

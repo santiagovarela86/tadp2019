@@ -1,6 +1,11 @@
 package object Musica {
+
   object Nota {
     def notas = List(C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B)
+
+    def sostenido(nota: Nota) = nota.sostenido
+
+    def bemol(nota: Nota) = nota.bemol
   }
 
   trait Nota {
@@ -22,30 +27,49 @@ package object Musica {
   }
 
   case object C extends Nota
+
   case object Cs extends Nota
+
   case object D extends Nota
+
   case object Ds extends Nota
+
   case object E extends Nota
+
   case object F extends Nota
+
   case object Fs extends Nota
+
   case object G extends Nota
+
   case object Gs extends Nota
+
   case object A extends Nota
+
   case object As extends Nota
+
   case object B extends Nota
 
   abstract class Figura(val duracion: Int)
+
   case object Redonda extends Figura(1500)
+
   case object Blanca extends Figura(Redonda.duracion / 2)
+
   case object Negra extends Figura(Blanca.duracion / 2)
+
   case object Corchea extends Figura(Negra.duracion / 2)
+
   case object SemiCorchea extends Figura(Corchea.duracion / 2)
 
   case class Tono(octava: Int, nota: Nota)
 
   trait Tocable
+
   case class Sonido(tono: Tono, figura: Figura) extends Tocable
+
   case class Silencio(figura: Figura) extends Tocable
+
   case class Acorde(tonos: List[Tono], figura: Figura) extends Tocable
 
   type Melodia = List[Tocable]
