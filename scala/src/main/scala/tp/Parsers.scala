@@ -2,14 +2,20 @@ package tp
 
 abstract class Result[+T] {
   def map[U](f: T => U): Result[U]
+
+  def filter(f: T => Boolean): Result[T]
 }
 
 case class Success[+T](result: T, resto: String) extends Result[T] {
   def map[U](f: T => U) = Success(f(result), resto)
+
+  def filter(f: T => Boolean): Result[T] = if (f(result)) Success(result, resto) else Failure("Doesn't satisfy the condition")
 }
 
 case class Failure(msg: String) extends Result[Nothing] {
   def map[U](f: Nothing => U) = this
+
+  def filter(f: Nothing => Boolean): Result[Nothing] = this
 }
 
 trait Parser[+T] {
@@ -17,7 +23,7 @@ trait Parser[+T] {
   def apply(input: String): Result[T]
 
   def map[U](f: T => U): Parser[U] = new Parser[U] {
-    def apply(input: String) = Parser.this (input) map (f)
+    def apply(input: String) = Parser.this (input) map f
   }
 
   def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
@@ -72,11 +78,7 @@ trait Parser[+T] {
 
   def satisfies(condicion: T => Boolean): Parser[T] = {
     new Parser[T] {
-      def apply(input: String) =
-        Parser.this (input) match {
-          case Success(result, resto) => if (condicion(result)) Success(result, resto) else Failure("Doesn't satisfy the condition")
-          case Failure(m) => Failure(m)
-        }
+      def apply(input: String) = Parser.this (input).filter(condicion)
     }
   }
 
