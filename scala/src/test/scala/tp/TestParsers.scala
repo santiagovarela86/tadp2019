@@ -434,16 +434,16 @@ class ParsersII_Tests {
   @Test
   def parserII_charAKleene_success_notSameChar() = {
     var resultadoParseo = charAKleene("bbba veces")
-    assertEquals(Success(List(()), "bbba veces"), resultadoParseo)
+    assertEquals(Success(List(), "bbba veces"), resultadoParseo)
   }
 
   @Test
   def parserII_charAKleene_success_empty() = {
     var resultadoParseo = charAKleene("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING, PUEDE APLICARSE 0 VECES
-    assertEquals(Success(List(()), ""), resultadoParseo)
+    assertEquals(Success(List(), ""), resultadoParseo)
   }
-  
+
   @Test
   def parserII_charAOperadorMas_success() = {
     var resultadoParseo = charAOperadorMas("aaaaa veces") //FALLA CON NOT THE SAME CHAR... VER COMO SALVAR EL ULTIMO
@@ -467,6 +467,7 @@ class ParsersII_Tests {
     var resultadoParseo = mapCharADigit("1234")
     assertEquals(Success(1, "234"), resultadoParseo)
   }
+
   @Test
   def parserII_map_mapCharADigit_failure() = {
     var resultadoParseo = mapCharADigit("a234")

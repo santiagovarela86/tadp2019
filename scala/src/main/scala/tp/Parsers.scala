@@ -106,34 +106,31 @@ trait Parser[+T] {
   }
 
   //ANY?
-  def * : Parser[Any] = {
-    new Parser[Any] {
+  def * : Parser[List[T]] = {
+    new Parser[List[T]] {
       def apply(input: String) = {
         Parser.this (input) match {
-          case Success(result, resto) => {
-            apply(resto) match {
-              case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
-            }
+          case Success(result, resto) => apply(resto) match {
+            case Success(result2: List[T], resto2) => Success(result :: result2, resto2)
           }
-          case Failure(m) => Success(List(()), input)
+          case Failure(_) => Success(List(), input)
         }
       }
     }
   }
 
-  //ANY?
-  def + : Parser[Any] = {
+  def + : Parser[List[T]] = {
     var huboAlMenosUnSuccess: Boolean = false
-    new Parser[Any] {
+    new Parser[List[T]] {
       def apply(input: String) = {
         Parser.this (input) match {
-          case Success(result, resto) => {
+          case Success(result: T, resto) => {
             huboAlMenosUnSuccess = true
             apply(resto) match {
-              case Success(result2, resto2) => Success(List(result, result2), resto2).map(flatten) //?? no hay una forma de hacer esto con lo que ya tengo???
+              case Success(result2: List[T], resto2) => Success(result :: result2, resto2)
             }
           }
-          case Failure(m) => if (huboAlMenosUnSuccess) Success(List(()), input) else Failure(m)
+          case Failure(m) => if (huboAlMenosUnSuccess) Success(List(), input) else Failure(m)
         }
       }
     }
@@ -142,7 +139,7 @@ trait Parser[+T] {
   //ANY?
   //SE PUEDE REEMPLAZAR ESTO POR ALGO QUE YA TENGO? o en su defecto meterlo dentro del operador *
   private def flatten(ls: List[Any]): List[Any] = ls flatMap {
-    case Failure(m) => List()
+    case Failure(_) => List()
     case () => List()
     case i: List[_] => flatten(i)
     case e => List(e)
@@ -150,25 +147,25 @@ trait Parser[+T] {
 }
 
 case object anyChar extends Parser[Char] {
-  def apply(input: String): Result[Char] = if (input.isEmpty()) Failure("Empty Input String") else Success(input.head, input.tail)
+  def apply(input: String): Result[Char] = if (input.isEmpty) Failure("Empty Input String") else Success(input.head, input.tail)
 }
 
 case object void extends Parser[Unit] {
-  def apply(input: String): Result[Unit] = if (input.isEmpty()) Failure("Empty Input String") else Success((), input.tail)
+  def apply(input: String): Result[Unit] = if (input.isEmpty) Failure("Empty Input String") else Success((), input.tail)
 }
 
 case object letter extends Parser[Char] {
-  def apply(input: String): Result[Char] = if (input.isEmpty()) Failure("Empty Input String") else if (input.head.isLetter) Success(input.head, input.tail) else
+  def apply(input: String): Result[Char] = if (input.isEmpty) Failure("Empty Input String") else if (input.head.isLetter) Success(input.head, input.tail) else
     Failure("Not a letter")
 }
 
 case object digit extends Parser[Char] {
-  def apply(input: String): Result[Char] = if (input.isEmpty()) Failure("Empty Input String") else if (input.head.isDigit) Success(input.head, input.tail) else
+  def apply(input: String): Result[Char] = if (input.isEmpty) Failure("Empty Input String") else if (input.head.isDigit) Success(input.head, input.tail) else
     Failure("Not a digit")
 }
 
 case object alphaNum extends Parser[Char] {
-  def apply(input: String): Result[Char] = if (input.isEmpty()) Failure("Empty Input String") else if (input.head.isDigit || input.head.isLetter) Success(input.head, input.tail) else
+  def apply(input: String): Result[Char] = if (input.isEmpty) Failure("Empty Input String") else if (input.head.isDigit || input.head.isLetter) Success(input.head, input.tail) else
     Failure("Not an alphanum")
 }
 
@@ -177,7 +174,7 @@ case object char {
   def apply(inputChar: Char): Parser[Char] = {
     new Parser[Char] {
       def apply(inputString: String) = {
-        if (inputString.isEmpty()) Failure("Empty Input String") else if (inputString.head == inputChar) Success(inputString.head, inputString.tail) else Failure("Not the same char")
+        if (inputString.isEmpty) Failure("Empty Input String") else if (inputString.head == inputChar) Success(inputString.head, inputString.tail) else Failure("Not the same char")
       }
     }
   }
@@ -185,12 +182,10 @@ case object char {
 
 //ESTA BIEN QUE NO EXTIENDA A PARSER[STRING]???
 case object string {
-  def apply(inputSubString: String): Parser[String] = {
-    new Parser[String] {
-      def apply(inputString: String) = {
-        if (inputString.isEmpty() || inputSubString.isEmpty()) Failure("Empty Input String") else if (inputString.startsWith(inputSubString)) Success(inputSubString, inputString.stripPrefix(inputSubString)) else
-          Failure("Not the same string")
-      }
+  def apply(inputSubString: String): Parser[String] = new Parser[String] {
+    def apply(inputString: String) = {
+      if (inputString.isEmpty || inputSubString.isEmpty) Failure("Empty Input String") else if (inputString.startsWith(inputSubString)) Success(inputSubString, inputString.stripPrefix(inputSubString)) else
+        Failure("Not the same string")
     }
   }
 }
