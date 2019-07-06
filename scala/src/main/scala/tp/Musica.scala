@@ -2,10 +2,6 @@ package object Musica {
 
   object Nota {
     def notas = List(C, Cs, D, Ds, E, F, Fs, G, Gs, A, As, B)
-
-    def sostenido(nota: Nota) = nota.sostenido
-
-    def bemol(nota: Nota) = nota.bemol
   }
 
   trait Nota {

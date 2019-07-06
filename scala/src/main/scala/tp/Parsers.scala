@@ -208,7 +208,7 @@ case object basicNota extends Parser[Nota] {
 }
 
 case object nota extends Parser[Nota] {
-  def apply(inputString: String) = ((basicNota <~ char('#')).map(Nota.sostenido) <|> (basicNota <~ char('b')).map(Nota.bemol) <|> basicNota) (inputString)
+  def apply(inputString: String) = ((basicNota <~ char('#')).map(_.sostenido) <|> (basicNota <~ char('b')).map(_.bemol) <|> basicNota) (inputString)
 }
 
 case object figura extends Parser[Figura] {
@@ -225,7 +225,20 @@ case object sonido extends Parser[Sonido] {
   def apply(input: String) = (tono <> figura).map(result => Sonido(result._1, result._2))(input)
 }
 
+
+case object acorde extends Parser[Acorde] {
+  def apply(input: String) = (acordeExplicito <|> acordeMayor <|> acordeMayor) (input)
+}
+
 case object acordeExplicito extends Parser[Acorde] {
   def apply(input: String) = (tono.sepBy(char('+')) <> figura).map(result => Acorde(result._1, result._2))(input)
+}
+
+case object acordeMenor extends Parser[Acorde] {
+  def apply(input: String) = (tono <~ char('m') <> figura).map(result => result._1.nota.acordeMenor(result._1.octava, result._2))(input)
+}
+
+case object acordeMayor extends Parser[Acorde] {
+  def apply(input: String) = (tono <~ char('M') <> figura).map(result => result._1.nota.acordeMayor(result._1.octava, result._2))(input)
 }
 

@@ -577,4 +577,9 @@ class ParsersIII_Tests {
     assertEquals(Success(Sonido(Tono(6, As), Negra), ""), resultadoParseo)
   }
 
+  @Test
+  def acordeExplicitoSuccess(): Unit = {
+    val resultadorParseo = acordeExplicito("6A+6C#+6G1/8")
+    assertEquals(Success(Acorde(List(Tono(6, A), Tono(6, Cs), Tono(6, G)), Corchea), ""), resultadorParseo)
+  }
 }
