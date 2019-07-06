@@ -2,17 +2,14 @@ package tp
 
 abstract class Result[+T] {
   def map[U](f: T => U): Result[U]
-  def flatMap[U](f: T => Parser[U]): Result[U]
 }
 
 case class Success[+T](result: T, resto: String) extends Result[T] {
   def map[U](f: T => U) = Success(f(result), resto)
-  def flatMap[U](f: T => Parser[U]) = f(result)(resto)
 }
 
 case class Failure(msg: String) extends Result[Nothing] {
   def map[U](f: Nothing => U) = this
-  def flatMap[U](f: Nothing => Parser[U]) = this
 }
 
 trait Parser[+T] {
@@ -24,7 +21,12 @@ trait Parser[+T] {
   }
 
   def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
-    def apply(input: String) = Parser.this (input) flatMap (f)
+    def apply(input: String) = Parser.this (input) match {
+      case Success(result, resto) => f(result)(resto)
+      case failure@Failure(_) => failure
+    }
+
+    //def apply(input: String) = Parser.this (input) flatMap (f)
   }
 
   def <|>[U >: T](p: Parser[U]): Parser[U] = {
