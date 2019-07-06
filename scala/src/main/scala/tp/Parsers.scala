@@ -119,6 +119,7 @@ trait Parser[+T] {
 
   def + : Parser[List[T]] = {
     def insideParser = Parser.this <> *
+
     new Parser[List[T]] {
       def apply(input: String): Result[List[T]] = insideParser.apply(input) match {
         case Success((first, second), resto) => Success(first :: second, resto)
@@ -126,7 +127,21 @@ trait Parser[+T] {
       }
     }
   }
+
+  def sepBy(separatorParser: Parser[Any]): Parser[List[T]] = {
+    def insideParser = (separatorParser ~> Parser.this) *
+
+    new Parser[List[T]] {
+      def apply(input: String): Result[List[T]] = Parser.this apply input match {
+        case Success(result, resto) => insideParser.apply(resto) match {
+          case Success(result2, resto2) => Success(result :: result2, resto2)
+        }
+        case failure: Failure => failure
+      }
+    }
+  }
 }
+
 
 case object anyChar extends Parser[Char] {
   def apply(input: String): Result[Char] = if (input.isEmpty) Failure("Empty Input String") else Success(input.head, input.tail)
