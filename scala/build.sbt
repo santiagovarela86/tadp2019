@@ -13,5 +13,8 @@ libraryDependencies ++= Seq(
   "com.novocode" % "junit-interface" % "0.11" % Test
 )
 
+libraryDependencies += "com.novocode" % "junit-interface" % "0.8" % "test->default"
+
+
 EclipseKeys.withSource := true
 EclipseKeys.withJavadoc := true

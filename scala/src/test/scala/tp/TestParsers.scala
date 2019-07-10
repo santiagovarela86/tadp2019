@@ -1,7 +1,8 @@
 package tp
 
-import org.junit.Test
+import Musica._
 import org.junit.Assert._
+import org.junit.Test
 
 class Parser_anyChar_Test {
   @Test
@@ -345,7 +346,7 @@ class ParsersII_Tests {
     case '8' => 8
     case '9' => 9
   })
-  val phoneNumber = digit.sepBy(char('-'))
+  val phoneNumber = digit.sepBy(char(' '))
 
   @Test
   def parserII_satisfies_alphaNumCombinedSatisfiesIsAOr9_success_A() = {
@@ -392,13 +393,13 @@ class ParsersII_Tests {
   @Test
   def parserII_opt_precedencia_success_infija_string() = {
     val resultadoParseo = precedencia("infija")
-    assertEquals(Success(("in", "fija"), ""), resultadoParseo)
+    assertEquals(Success((Some("in"), "fija"), ""), resultadoParseo)
   }
 
   @Test
   def parserII_opt_precedencia_success_fija_string() = {
     val resultadoParseo = precedencia("fija")
-    assertEquals(Success(((), "fija"), ""), resultadoParseo)
+    assertEquals(Success((None, "fija"), ""), resultadoParseo)
   }
 
   @Test
@@ -410,20 +411,20 @@ class ParsersII_Tests {
   @Test
   def parserII_opt_talVezChar_success_infija_string() = {
     val resultadoParseo = talVezChar("a veces")
-    assertEquals(Success('a', " veces"), resultadoParseo)
+    assertEquals(Success(Some('a'), " veces"), resultadoParseo)
   }
 
   @Test
   def parserII_opt_talVezChar_success_fija_string() = {
     val resultadoParseo = talVezChar("gano")
-    assertEquals(Success((), "gano"), resultadoParseo)
+    assertEquals(Success(None, "gano"), resultadoParseo)
   }
 
   @Test
   def parserII_opt_talVezChar_string_success_empty() = {
     val resultadoParseo = talVezChar("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING
-    assertEquals(Success((), ""), resultadoParseo)
+    assertEquals(Success(None, ""), resultadoParseo)
   }
 
   @Test
@@ -435,14 +436,14 @@ class ParsersII_Tests {
   @Test
   def parserII_charAKleene_success_notSameChar() = {
     val resultadoParseo = charAKleene("bbba veces")
-    assertEquals(Success(List(()), "bbba veces"), resultadoParseo)
+    assertEquals(Success(List(), "bbba veces"), resultadoParseo)
   }
 
   @Test
   def parserII_charAKleene_success_empty() = {
     val resultadoParseo = charAKleene("")
     //assertEquals(Failure("Empty Input String"), resultadoParseo) //NO FALLA CON EMPTY STRING, PUEDE APLICARSE 0 VECES
-    assertEquals(Success(List(()), ""), resultadoParseo)
+    assertEquals(Success(List(), ""), resultadoParseo)
   }
 
   @Test
@@ -483,6 +484,30 @@ class ParsersII_Tests {
 
   @Test
   def parserII_sepBy_phoneNumber_success() = {
+    val resultadoParseo = phoneNumber("1 2 3 4 5 6 7 8")
+    assertEquals(Success(List('1', '2', '3', '4', '5', '6', '7', '8'), ""), resultadoParseo)
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_failure() = {
+    val resultadoParseo = phoneNumber("1234 5678")
+    assertEquals(Success(List('1'), "234 5678"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_failure_notADigit() = {
+    val resultadoParseo = phoneNumber("saraza")
+    assertEquals(Failure("Not a digit"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_failure_empty() = {
+    val resultadoParseo = phoneNumber("")
+    assertEquals(Failure("Empty Input String"), resultadoParseo)
+  }
+
+  @Test
+  def parserII_sepBy_phoneNumber_success() = {
     assertEquals(Success(List('1', '2', '3', '4', '5', '6', '7', '8'), ""), phoneNumber("1234-5678"))
   }
 
@@ -502,43 +527,97 @@ class ParsersII_Tests {
   }
 }
 
-class Musiquita_test {
-
-  val nota = letter.satisfies((caracter: Char) => List('A', 'B', 'C', 'D', 'E', 'F', 'G').contains(caracter))
-  val tono = digit <> nota
-  val digito = digit.+.satisfies((a: Any) => {
-      List('1') == a ||
-      List('2') == a ||
-      List('4') == a ||
-      List('8') == a ||
-      List('1', '6') == a
-  })
-  val figura = char('1') <> char('/') <> digito
-  val silencio = char('_') <|> char('-') <|> char('~')
+class ParsersIII_Tests {
 
   @Test
-  def parserNota() = {
-    assertEquals(Success('A', ""), nota("A"))
+  def silencioBlancaParser() = {
+    val resultadoParseo = silencio("_A")
+    assertEquals(Success(Silencio(Blanca), "A"), resultadoParseo)
   }
 
   @Test
-  def parserTono() = {
-    assertEquals(Success(('5', 'E'), ""), tono("5E"))
+  def silencioCorcheaParser(): Unit = {
+    val resultadoParseo = silencio("~A")
+    assertEquals(Success(Silencio(Corchea), "A"), resultadoParseo)
   }
 
   @Test
-  def parserDigito() = {
-    assertEquals(Success(List('1', '6'), ""), digito("16"))
+  def notaParserSuccessA(): Unit = {
+    val resultadoParseo = nota("ABCD")
+    assertEquals(Success(A, "BCD"), resultadoParseo)
   }
 
   @Test
-  def parserFigura() = {
-    assertEquals(Success((('1', '/'), List('1', '6')), ""), figura("1/16"))
+  def notaParserSuccesAs: Unit = {
+    val resultadoParseo = nota("A#B")
+    assertEquals(Success(As, "B"), resultadoParseo)
   }
 
   @Test
-  def parserSilencio() = {
-    assertEquals(Success('-', ""), silencio("-"))
+  def notaParserFailure(): Unit = {
+    val resultadoParseo = nota("XABCD")
+    assertEquals(Failure("Doesn't satisfy the condition"), resultadoParseo) //Estaria copado que sea otro error
   }
 
+  @Test
+  def figuraParserCorchea(): Unit = {
+    val resultadoParseo = figura("1/8A")
+    assertEquals(Success(Corchea, "A"), resultadoParseo)
+  }
+
+  @Test
+  def figuraParserFailure(): Unit = {
+    val resultadoParseo = figura("1/7B")
+    assertEquals(Failure("Not the same string"), resultadoParseo) //Estaria copado que sea otro error
+  }
+
+  @Test
+  def tonoParser6A(): Unit = {
+    val resultadoParseo = tono("6A")
+    assertEquals(Success(Tono(6, A), ""), resultadoParseo
+    )
+  }
+
+  @Test
+  def tonoParser1024D(): Unit = {
+    val resultadoParseo = tono("1024D#J")
+    assertEquals(Success(Tono(1024, Ds), "J"), resultadoParseo
+    )
+  }
+
+  @Test
+  def tonoParserFailure(): Unit = {
+    val resultadoParseo = tono("6,5A")
+    assertEquals(Failure("Doesn't satisfy the condition"), resultadoParseo)
+  }
+
+  @Test
+  def sonidoParser6AsNegra(): Unit = {
+    val resultadoParseo = sonido("6A#1/4")
+    assertEquals(Success(Sonido(Tono(6, As), Negra), ""), resultadoParseo)
+  }
+
+  @Test
+  def acordeExplicitoSuccess(): Unit = {
+    val resultadorParseo = acordeExplicito("6A+6C#+6G1/8")
+    assertEquals(Success(Acorde(List(Tono(6, A), Tono(6, Cs), Tono(6, G)), Corchea), ""), resultadorParseo)
+  }
+
+  @Test
+  def acordeMayorSuccess(): Unit = {
+    val resultadoParseo = acordeMayor("6AM1/2")
+    assertEquals(Success(Acorde(List(Tono(6, A), Tono(6, Cs), Tono(6, E)), Blanca), ""), resultadoParseo)
+  }
+
+  @Test
+  def melodiaFCSucces(): Unit = {
+    val resultadoParseo = melodia("4C1/4 4C1/4 4D1/2 4C1/4 4F1/2 4E1/2 4C1/8 4C1/4 4D1/2 4C1/2 4G1/2 4F1/2 4C1/8 4C1/4 5C1/2 4A1/2 4F1/8 4F1/4 4E1/2 4D1/2")
+    assertTrue(resultadoParseo.isInstanceOf[Success[Melodia]])
+  }
+
+  @Test
+  def melodiaBonusSuccess(): Unit = {
+    val resultadoParseo = melodia("4AM1/8 5C1/8 5C#1/8 5C#1/8 5D#1/8 5C1/8 4A#1/8 4G#1/2 - 4A#1/8 4A#1/8 5C1/4 5C#1/8 4A#1/4 4G#1/2 5G#1/4 5G#1/4 5D#1/2")
+    assertTrue(resultadoParseo.isInstanceOf[Success[Melodia]])
+  }
 }
