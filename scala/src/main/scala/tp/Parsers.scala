@@ -4,20 +4,18 @@ import Musica._
 
 abstract class Result[+T] {
   def map[U](f: T => U): Result[U]
-
   def filter(f: T => Boolean): Result[T]
 }
 
 case class Success[+T](result: T, resto: String) extends Result[T] {
   def map[U](f: T => U) = Success(f(result), resto)
-
   def filter(f: T => Boolean): Result[T] = if (f(result)) Success(result, resto) else Failure("Doesn't satisfy the condition")
 }
 
 case class Failure(msg: String) extends Result[Nothing] {
   def map[U](f: Nothing => U) = this
-
   def filter(f: Nothing => Boolean): Result[Nothing] = this
+
 }
 
 trait Parser[+T] {
@@ -233,4 +231,3 @@ case object acordeMayor extends Parser[Acorde] {
 case object melodia extends Parser[Melodia] {
   def apply(input: String) = (silencio <|> acorde <|> sonido).sepBy(char(' '))(input)
 }
-
