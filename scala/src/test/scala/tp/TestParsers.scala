@@ -448,7 +448,7 @@ class ParsersII_Tests {
 
   @Test
   def parserII_charAOperadorMas_success() = {
-    val resultadoParseo = charAOperadorMas("aaaaa veces") //FALLA CON NOT THE SAME CHAR... VER COMO SALVAR EL ULTIMO
+    val resultadoParseo = charAOperadorMas("aaaaa veces")
     assertEquals(Success(List('a', 'a', 'a', 'a', 'a'), " veces"), resultadoParseo)
   }
 
@@ -505,26 +505,6 @@ class ParsersII_Tests {
     val resultadoParseo = phoneNumber("")
     assertEquals(Failure("Empty Input String"), resultadoParseo)
   }
-
-  @Test
-  def parserII_sepBy_phoneNumber_success() = {
-    assertEquals(Success(List('1', '2', '3', '4', '5', '6', '7', '8'), ""), phoneNumber("1234-5678"))
-  }
-
-  @Test
-  def parserII_sepBy_phoneNumber_failure() = {
-    assertEquals(Failure("Unexpected char"), phoneNumber("1234 5678"))
-  }
-
-  @Test
-  def parserII_sepBy_phoneNumber_failure_notSameChar() = {
-    assertEquals(Failure("Not the same char"), phoneNumber("saraza"))
-  }
-
-  @Test
-  def parserII_sepBy_phoneNumber_failure_empty() = {
-    assertEquals(Failure("Empty Input String"), phoneNumber(""))
-  }
 }
 
 class ParsersIII_Tests {
@@ -574,15 +554,13 @@ class ParsersIII_Tests {
   @Test
   def tonoParser6A(): Unit = {
     val resultadoParseo = tono("6A")
-    assertEquals(Success(Tono(6, A), ""), resultadoParseo
-    )
+    assertEquals(Success(Tono(6, A), ""), resultadoParseo)
   }
 
   @Test
   def tonoParser1024D(): Unit = {
     val resultadoParseo = tono("1024D#J")
-    assertEquals(Success(Tono(1024, Ds), "J"), resultadoParseo
-    )
+    assertEquals(Success(Tono(1024, Ds), "J"), resultadoParseo)
   }
 
   @Test

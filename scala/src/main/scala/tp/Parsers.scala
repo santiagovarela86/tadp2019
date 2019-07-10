@@ -15,7 +15,6 @@ case class Success[+T](result: T, resto: String) extends Result[T] {
 case class Failure(msg: String) extends Result[Nothing] {
   def map[U](f: Nothing => U) = this
   def filter(f: Nothing => Boolean): Result[Nothing] = this
-
 }
 
 trait Parser[+T] {
@@ -23,13 +22,13 @@ trait Parser[+T] {
   def apply(input: String): Result[T]
 
   def map[U](f: T => U): Parser[U] = new Parser[U] {
-    def apply(input: String) = Parser.this (input) map f
+    def apply(input: String) = Parser.this(input) map f
   }
 
   def flatMap[U](f: T => Parser[U]): Parser[U] = new Parser[U] {
-    def apply(input: String) = Parser.this (input) match {
+    def apply(input: String) = Parser.this(input) match {
       case Success(result, resto) => f(result)(resto)
-      case failure@Failure(_) => failure
+      case failure @ Failure(_)   => failure
     }
 
     //def apply(input: String) = Parser.this (input) flatMap (f)
@@ -38,9 +37,9 @@ trait Parser[+T] {
   def <|>[U >: T](p: Parser[U]): Parser[U] = {
     new Parser[U] {
       def apply(input: String) =
-        Parser.this (input) match {
+        Parser.this(input) match {
           case Success(result, resto) => Success(result, resto)
-          case Failure(_) => p(input)
+          case Failure(_)             => p(input)
         }
     }
   }
@@ -48,10 +47,10 @@ trait Parser[+T] {
   def <>[U](p: Parser[U]): Parser[(T, U)] = {
     new Parser[(T, U)] {
       def apply(input: String) =
-        Parser.this (input) match {
+        Parser.this(input) match {
           case Success(result, resto) => p(resto) match {
             case Success(result2, resto2) => Success((result, result2), resto2)
-            case Failure(m) => Failure(m)
+            case Failure(m)               => Failure(m)
           }
           case Failure(m) => Failure(m)
         }
@@ -78,16 +77,16 @@ trait Parser[+T] {
 
   def satisfies(condicion: T => Boolean): Parser[T] = {
     new Parser[T] {
-      def apply(input: String) = Parser.this (input).filter(condicion)
+      def apply(input: String) = Parser.this(input).filter(condicion)
     }
   }
 
   def opt: Parser[Option[T]] = {
     new Parser[Option[T]] {
       def apply(input: String) = {
-        Parser.this (input) match {
+        Parser.this(input) match {
           case Success(result, resto) => Success(Option(result), resto)
-          case _ => Success(Option.empty, input)
+          case _                      => Success(Option.empty, input)
         }
       }
     }
@@ -96,9 +95,9 @@ trait Parser[+T] {
   def const[T](valor: T): Parser[T] = {
     new Parser[T] {
       def apply(input: String) = {
-        Parser.this (input) match {
+        Parser.this(input) match {
           case Success(_, resto) => Success(valor, resto)
-          case Failure(m) => Failure(m)
+          case Failure(m)        => Failure(m)
         }
       }
     }
@@ -107,7 +106,7 @@ trait Parser[+T] {
   def * : Parser[List[T]] = {
     new Parser[List[T]] {
       def apply(input: String) = {
-        Parser.this (input) match {
+        Parser.this(input) match {
           case Success(result, resto) => apply(resto) match {
             case Success(result2: List[T], resto2) => Success(result :: result2, resto2)
           }
@@ -123,7 +122,7 @@ trait Parser[+T] {
     new Parser[List[T]] {
       def apply(input: String): Result[List[T]] = insideParser.apply(input) match {
         case Success((first, second), resto) => Success(first :: second, resto)
-        case failure: Failure => failure
+        case failure: Failure                => failure
       }
     }
   }
@@ -141,7 +140,6 @@ trait Parser[+T] {
     }
   }
 }
-
 
 case object anyChar extends Parser[Char] {
   def apply(input: String): Result[Char] = if (input.isEmpty) Failure("Empty Input String") else Success(input.head, input.tail)
@@ -194,13 +192,13 @@ case object basicNota extends Parser[Nota] {
 }
 
 case object nota extends Parser[Nota] {
-  def apply(inputString: String) = ((basicNota <~ char('#')).map(_.sostenido) <|> (basicNota <~ char('b')).map(_.bemol) <|> basicNota) (inputString)
+  def apply(inputString: String) = ((basicNota <~ char('#')).map(_.sostenido) <|> (basicNota <~ char('b')).map(_.bemol) <|> basicNota)(inputString)
 }
 
 case object figura extends Parser[Figura] {
   val denominadorParser = char('1').const(Redonda) <|> char('2').const(Blanca) <|> char('4').const(Negra) <|> char('8').const(Corchea) <|> string("16").const(SemiCorchea)
 
-  def apply(input: String) = ((char('1') ~> char('/')) ~> denominadorParser) (input)
+  def apply(input: String) = ((char('1') ~> char('/')) ~> denominadorParser)(input)
 }
 
 case object tono extends Parser[Tono] {
@@ -211,9 +209,8 @@ case object sonido extends Parser[Sonido] {
   def apply(input: String) = (tono <> figura).map(result => Sonido(result._1, result._2))(input)
 }
 
-
 case object acorde extends Parser[Acorde] {
-  def apply(input: String) = (acordeExplicito <|> acordeMenor <|> acordeMayor) (input)
+  def apply(input: String) = (acordeExplicito <|> acordeMenor <|> acordeMayor)(input)
 }
 
 case object acordeExplicito extends Parser[Acorde] {
